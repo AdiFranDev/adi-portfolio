@@ -1,15 +1,30 @@
 import type { Metadata } from "next"
-import { Geist } from "next/font/google"
+import { Bricolage_Grotesque, Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SiteNav } from "@/components/site/site-nav"
+import { GrainBackdrop } from "@/components/site/grain-backdrop"
 import { cn } from "@/lib/utils"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
+const geistMono = Geist_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-mono" })
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
+  variable: "--font-display",
+})
+// Only used for 日本語. Google serves Japanese in unicode-range slices, so the
+// browser downloads just the slice that holds those three glyphs.
+const notoJp = Noto_Sans_JP({ weight: ["700"], preload: false, variable: "--font-jp" })
 
 export const metadata: Metadata = {
-  title: "Francis Adrian Esteban",
-  description: "Computer science student, Cagayan de Oro.",
+  title: "Francis Adrian Esteban · Portfolio",
+  description:
+    "Francis Adrian Esteban, Computer Science at USTP Cagayan de Oro: algorithms, urban farms, and student institutions, built with the same care.",
 }
+
+// First visit in a session: mark the page before paint so the intro overlay shows.
+const introScript = `try{if(!sessionStorage.getItem("intro-seen")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.dataset.intro="play"}}catch(e){}`
 
 export default function RootLayout({
   children,
@@ -17,14 +32,30 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
-      <body>
+    <html
+      lang="en"
+      className={cn("font-sans", geist.variable, geistMono.variable, bricolage.variable, notoJp.variable)}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
+      </head>
+      {/* Browser extensions (Grammarly and others) add attributes to <body> before React loads. */}
+      <body suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <a
+            href="#main"
+            className="sr-only z-[80] rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+          >
+            Skip to content
+          </a>
+          <GrainBackdrop />
+          <SiteNav />
           {children}
         </ThemeProvider>
       </body>
