@@ -1,0 +1,20 @@
+# dependencies and build output
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets
+.env*
+!.env.example
+
+# tools
+.vercel
+.claude/settings.local.json
+CLAUDE.local.md
+
+# claude
+CLAUDE.md
+docs
+Claude outputs
