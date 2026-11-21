@@ -10,6 +10,7 @@
     --font-mono: var(--font-mono);
     --font-display: var(--font-display);
     --font-jp: var(--font-jp);
+    --font-hand: var(--font-hand);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -635,5 +636,83 @@ html:not([data-intro="play"]) .site-nav > * {
 @media (prefers-reduced-motion: reduce) {
   .photo-blend {
     transition: none;
+  }
+}
+
+/* Hero graph: each edge draws in (a mask growing along it), then its dots drift. */
+.graph-draw {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+.graph-draw-on {
+  animation-name: graph-draw;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  animation-fill-mode: both;
+}
+@keyframes graph-draw {
+  to { stroke-dashoffset: 0; }
+}
+.graph-flow {
+  animation: graph-flow 9s linear infinite;
+}
+@keyframes graph-flow {
+  to { stroke-dashoffset: -71; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .graph-draw-on { animation: none; stroke-dashoffset: 0; }
+  .graph-flow { animation: none; }
+}
+
+/* Hero: the name's size and place, and the farm placed from them. The farm photo
+   (3:2) is drawn at least 120% of the screen height, then moved so its near tree
+   line (39% down the photo) lands near the bottom of FRANCIS, without ever
+   leaving a gap at the top or bottom. The front layer uses the same frame. */
+.hero-scene {
+  container-type: size;
+}
+.farm-frame {
+  position: absolute;
+  inset: 0;
+}
+@media (min-width: 768px) {
+  .hero-scene {
+    --name-size: clamp(56px, min(7.4cqw, 16cqh), 132px);
+    --name-top: max(92px, calc(22.2cqh - 40px));
+    --hd: max(120cqh, 100cqw / 1.5);
+  }
+  .farm-frame {
+    inset: auto 0;
+    height: var(--hd);
+    top: clamp(calc(100cqh - var(--hd)), calc(var(--name-top) + var(--name-size) * 0.86 - var(--hd) * 0.39), 0px);
+  }
+}
+
+/* Hero: ADRIAN's entrance. It waits, hidden, until the farm frame arrives, then
+   wipes in from the left, rising a little and coming into focus, timed to start
+   as FRANCIS's dots are finishing. The negative insets leave room for RAWR and
+   the bite once it is in. */
+.adrian-wait {
+  clip-path: inset(-20% 100% -20% -20%);
+}
+.adrian-in {
+  animation: adrian-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms both;
+}
+@keyframes adrian-in {
+  from {
+    clip-path: inset(-20% 100% -20% -20%);
+    transform: translateY(0.12em);
+    filter: blur(8px);
+  }
+  to {
+    clip-path: inset(-20% -40% -20% -20%);
+    transform: none;
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adrian-wait,
+  .adrian-in {
+    clip-path: none;
+    animation: none;
   }
 }

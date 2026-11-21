@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Bricolage_Grotesque, Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google"
+import { Bricolage_Grotesque, Caveat, Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteNav } from "@/components/site/site-nav"
@@ -15,6 +15,8 @@ const bricolage = Bricolage_Grotesque({
 })
 // Only used for 日本語. Google serves Japanese in unicode-range slices, so the
 // browser downloads just the slice that holds those three glyphs.
+// Hand-written notes on the hero pins.
+const caveat = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-hand" })
 const notoJp = Noto_Sans_JP({ weight: ["700"], preload: false, variable: "--font-jp" })
 
 export const metadata: Metadata = {
@@ -34,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("font-sans", geist.variable, geistMono.variable, bricolage.variable, notoJp.variable)}
+      className={cn("font-sans", geist.variable, geistMono.variable, bricolage.variable, caveat.variable, notoJp.variable)}
       suppressHydrationWarning
     >
       <head>

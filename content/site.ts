@@ -25,11 +25,46 @@ export const hero = {
     { lang: "ja", text: "こんにちは、アドリアンです！" },
   ],
   tagline: "Algorithms, urban farms, and student institutions, built with the same care.",
+  // The tagline, taken apart into nodes for the hero graph.
+  topics: [
+    { id: "algorithms", label: "Algorithms", n: "04" },
+    { id: "farms", label: "Urban farms", n: "05" },
+    { id: "institutions", label: "Student institutions", n: "06" },
+    // On Adrian's back, under the 4-H logo; joined to every other node.
+    { id: "empathy", label: "Empathy", n: "07" },
+  ],
+  // Where each node sits on the farm scene (share of the screen) and which pairs are
+  // joined. Nodes stay at the sides; no edge crosses the middle.
+  graph: {
+    place: {
+      researcher: { x: 0.05, y: 0.45, tilt: -3 },
+      algorithms: { x: 0.21, y: 0.66 },
+      farms: { x: 0.07, y: 0.8 },
+      creative: { x: 0.78, y: 0.4, tilt: -2 },
+      community: { x: 0.71, y: 0.6, tilt: 2 },
+      institutions: { x: 0.83, y: 0.79 },
+      empathy: { x: 0.5, y: 0.87 },
+    },
+    edges: [
+      ["researcher", "algorithms"],
+      ["algorithms", "farms"],
+      ["researcher", "farms"],
+      ["creative", "community"],
+      ["community", "institutions"],
+      ["creative", "institutions"],
+      ["empathy", "researcher"],
+      ["empathy", "algorithms"],
+      ["empathy", "farms"],
+      ["empathy", "community"],
+      ["empathy", "creative"],
+      ["empathy", "institutions"],
+    ],
+  },
   cvHref: "/cv.pdf",
   sides: [
-    { id: "researcher", label: "Researcher", n: "01", href: "#projects" },
-    { id: "community", label: "Community leader", n: "02", href: "#projects" },
-    { id: "creative", label: "Creative Developer", n: "03", href: "#projects" },
+    { id: "researcher", label: "Researcher", n: "01", href: "#projects", note: "graphs that route people out of floods" },
+    { id: "community", label: "Community leader", n: "02", href: "#projects", note: "4-H, CS³ and the city scholars" },
+    { id: "creative", label: "Creative Developer", n: "03", href: "#projects", note: "I build what I design" },
   ],
   photos: {
     background: {
@@ -56,17 +91,17 @@ export const hero = {
     },
     // The foreground garden, one image cut into three pieces that part on scroll.
     leavesLeft: {
-      file: "/images/hero/bloom-left.webp",
+      file: "/images/hero/bush-left.webp",
       alt: "",
       label: "Foreground garden, left piece (0-40%), transparent WebP",
     },
     leavesMiddle: {
-      file: "/images/hero/bloom-middle.webp",
+      file: "/images/hero/meadow-ground.webp",
       alt: "",
-      label: "Foreground garden, middle piece (34-66%), transparent WebP",
+      label: "Foreground garden, middle piece (16-84%, ground only past 34-66%), transparent WebP",
     },
     leavesRight: {
-      file: "/images/hero/bloom-right.webp",
+      file: "/images/hero/bush-right.webp",
       alt: "",
       label: "Foreground garden, right piece (60-100%), transparent WebP",
     },
@@ -75,8 +110,10 @@ export const hero = {
   status: string
   greetings: { lang: string; text: string }[]
   tagline: string
+  topics: { id: string; label: string; n: string }[]
+  graph: { place: Record<string, { x: number; y: number; tilt?: number }>; edges: [string, string][] }
   cvHref: string
-  sides: { id: string; label: string; n: string; href: string }[]
+  sides: { id: string; label: string; n: string; href: string; note: string }[]
   photos: Record<string, PhotoSpec>
 }
 
@@ -105,24 +142,57 @@ export const about = {
   } satisfies Record<string, PhotoSpec>,
 }
 
-export type WhoRow = { title: string; detail: string; lang?: string; dot?: boolean }
+// Who I am: three timelines, newest first. `todo: true` marks an entry Adrian
+// still has to fill in; it renders highlighted until then.
+export type TimelineEntry = {
+  org: string
+  title: string
+  meta?: string
+  dates?: string
+  tags?: { text: string; lang?: string }[]
+  lang?: string
+  stat?: "streak"
+  todo?: boolean
+}
 
 export const who = {
   education: [
-    { title: "BS Computer Science, USTP Cagayan de Oro", detail: "2023 to 2027 · expected June 2027" },
-    { title: "Iskolar sa Dakbayan", detail: "City Scholar of Cagayan de Oro", lang: "ceb", dot: true },
-    { title: "CHED-UniFAST USTAT Scholar", detail: "Free tuition, earned by passing the USTAT", dot: true },
+    {
+      org: "University of Science and Technology of Southern Philippines, Cagayan de Oro",
+      title: "BS Computer Science",
+      meta: "Expected graduation June 2027",
+      dates: "2023 to present",
+      tags: [
+        { text: "Dean's Lister, 1st sem AY 2024 to 2025" },
+        { text: "Dean's Lister, 2nd sem AY 2025 to 2026" },
+        { text: "Cagayan de Oro City Scholarship Program" },
+        { text: "CHED-UniFAST Scholarship" },
+      ],
+    },
+    {
+      org: "Liceo de Cagayan University, Main Campus",
+      title: "Senior High School, STEM strand",
+      meta: "Outstanding Student Leadership Award",
+      dates: "2020 to 2023",
+    },
+    {
+      org: "Gusa Elementary School and East Gusa National High School",
+      title: "Primary and secondary education",
+      meta: "Completed with honors",
+      dates: "2012 to 2020",
+    },
   ],
   leadership: [
-    { title: "4-H Club USTP-CDO", detail: "Senior Advisor · former Director of Community Outreach · founding officer" },
-    { title: "Computer Science Student Society", detail: "Senior Advisor · former VP for Internal Affairs · 1st CS³ Congress" },
-    { title: "University City Scholars", detail: "Senior Advisor, Academic Affairs · former Department Head" },
+    { org: "4-H Club USTP-CDO", title: "Senior Advisor", meta: "Former Director of Community Outreach · founding officer" },
+    { org: "Computer Science Student Society", title: "Senior Advisor", meta: "Former VP for Internal Affairs · 1st CS³ Congress" },
+    { org: "University City Scholars", title: "Senior Advisor, Academic Affairs", meta: "Former Department Head" },
   ],
   languages: [
-    { title: "Filipino, Tagalog, Bisaya (Cebuano)", detail: "Mother tongues" },
-    { title: "English", detail: "Proficient · language of instruction at university" },
+    { org: "Filipino, Tagalog, Bisaya (Cebuano)", title: "Mother tongues" },
+    { org: "English", title: "Proficient", meta: "Language of instruction at university" },
+    { org: "Nihongo 日本語", title: "Beginner", meta: "Duolingo streak", stat: "streak" },
   ],
-} satisfies Record<string, WhoRow[]>
+} satisfies Record<string, TimelineEntry[]>
 
 /**
  * Duolingo streak. Day 1 is the start date in Asia/Manila time.

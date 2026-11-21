@@ -86,7 +86,7 @@ first visit?
                     ▼
                2 Hero frame 2 (name, cutout, CTAs)
                     ▼
-               3 About (photo blend) → Who I am (3 cards)
+               3 About (photo blend) → Who I am (3 timelines)
                     ▼
                4 Experiences: vertical scroll moves cards sideways
                     ▼
@@ -164,7 +164,7 @@ Each spec lists: purpose, transition in, contents, interaction, transition out, 
 4. The nav and a "Scroll" cue. No other text.
 
 **Transition (the "boom", one scroll):** scroll progress 0 to 1 over the sticky scene:
-- the garden's side pieces slide out to the sides and the meadow piece sinks, all fading
+- the garden zooms in toward the viewer (scale 1 to 1.9, centred just below Adrian's shoulders) and fades out as one piece, with no splitting
 - the bottom of the scene (photos and cutout) fades to transparent with a soft blur band, so the hero dissolves into the page instead of ending in a hard edge
 - background scales 1.15 to 1, and the campus blurs and fades into a farmland photo underneath; a light bone-white wash fades in over the farm so the name and text stay readable; as the farm comes in, Adrian's cutout changes from the black shirt to the 4-H shirt (same pose, crossfade)
 - the cutout scales 1 to about 0.92
@@ -179,6 +179,8 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 **Done when:** one scroll reaches frame 2 at 60 fps on a mid-range laptop, the page is never locked, and the LCP image is preloaded with `priority`.
 
 ### 4.2 Hero, after one scroll (frame 2)
+
+**Frame 2, the name and the graph.** The greeting (cycling through five languages) sits in a small centred pill just above the name; the pill eases to the width of each greeting. FRANCIS and ADRIAN share one line on desktop (two on phones), same font and size, bottoms aligned. FRANCIS is a field of small tilted ink-coloured dots that build in one by one, mostly left to right, over about 2 seconds when the farm frame arrives (all at once with reduced motion). ADRIAN is solid pink and keeps the ADRIAN to ADIRAWR hover and bite. The hero has no buttons (View CV lives in About). Instead, a graph of seven numbered nodes: 01 Researcher, 02 Community leader, 03 Creative Developer (with hand-written notes, linking to the projects), 04 Algorithms, 05 Urban farms, 06 Student institutions (from the tagline), and 07 Empathy on Adrian's back under the 4-H logo, joined to all six. Side nodes stay clear of Adrian and the name. Curved dotted edges (dark dots on a light casing, visible in both themes) draw in one after another, then drift slowly while small pink runners travel every edge. The tagline stays as screen-reader text on desktop and shows on a sheet on phones. Desktop only for the graph.
 
 - The greeting cycles every 2.8 seconds through Adrian's five languages: English, Cebuano, Filipino, Tagalog, Japanese. Screen readers hear the English one once; reduced motion keeps it still.
 
@@ -201,7 +203,7 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 
 **Background (whole page):** one fixed grainy gradient behind every section, in brand pinks and greens, softer on bone in light mode and glowing on the near-black in dark mode. The glows drift and pulse slowly; one follows the pointer and shifts from pink (left) to green (right); everything leans slightly toward the pointer. Film grain on top. No section edges or cuts. Reduced motion: still, no pointer tracking. (src/components/site/grain-backdrop.tsx)
 
-**Transition in:** the section fades up (translateY 24 px, 600 ms). The three Who I am cards stagger in, 80 ms apart.
+**Transition in:** the section fades up (translateY 24 px, 600 ms). The three Who I am timelines stagger in, 80 ms apart.
 
 **Contents, top block:**
 - "Hi, I am" (neutral) and the name as an `<h2>` (the hero holds the `<h1>`).
@@ -210,13 +212,13 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 
 **Photo blend interaction:** no frame or border; the photo's edges fade into the page. Mouse: a small soft circle follows the cursor (a white dot marks it) and shows the other photo inside it. A **Reveal** button under the photo opens the other photo out of the button as a growing circle, and closes it back on the next press; while revealed, the hover circle shows the academic photo. Touch: a tap does the same as the button. Reduced motion: instant swap.
 
-**Contents, Who I am band (three cards):**
+**Contents, Who I am band (three borderless timelines):** each is a numbered list on a thin rail. As the page scrolls, the step reaching the reading line (62% down the screen) lights up (number filled in ink, full opacity) and the others dim; hover or focus lights a step directly. Reduced motion: every step stays lit. Entries live in `who` in `content/site.ts`; an entry marked `todo` renders in pink until filled in.
 
-| Card | Lines |
+| Timeline | Steps, newest first |
 |---|---|
-| Education and scholarships | BS Computer Science, USTP Cagayan de Oro, 2023 to 2027 (expected June 2027) · Iskolar sa Dakbayan (City Scholar of Cagayan de Oro, `lang="ceb"`) · CHED-UniFAST USTAT Scholar (free tuition, earned by passing the USTAT) |
-| Leadership | 4-H Club USTP-CDO: Senior Advisor, former Director of Community Outreach, founding officer · Computer Science Student Society (CS³): Senior Advisor, former VP for Internal Affairs, 1st CS³ Congress · University City Scholars: Senior Advisor for Academic Affairs, former Department Head |
-| Languages | Filipino, Tagalog, Bisaya (Cebuano): mother tongues · English: proficient, the language of instruction at university · Nihongo 日本語: beginner, with a live Duolingo streak counter |
+| Education | 1 University of Science and Technology of Southern Philippines, Cagayan de Oro: BS Computer Science, 2023 to present, expected graduation June 2027, with tags Dean's Lister (1st sem AY 2024 to 2025; 2nd sem AY 2025 to 2026), Cagayan de Oro City Scholarship Program, CHED-UniFAST Scholarship · 2 Liceo de Cagayan University, Main Campus: Senior High School, STEM strand, 2020 to 2023, Outstanding Student Leadership Award · 3 Gusa Elementary School and East Gusa National High School: primary and secondary education, 2012 to 2020, completed with honors |
+| Leadership | 1 4-H Club USTP-CDO: Senior Advisor, former Director of Community Outreach, founding officer · 2 Computer Science Student Society (CS³): Senior Advisor, former VP for Internal Affairs, 1st CS³ Congress · 3 University City Scholars: Senior Advisor for Academic Affairs, former Department Head |
+| Languages | 1 Filipino, Tagalog, Bisaya (Cebuano): mother tongues · 2 English: proficient, the language of instruction at university · 3 Nihongo 日本語: beginner, with the live Duolingo streak counter |
 
 **Duolingo streak counter:**
 - Day 1 is 2026-04-04, Asia/Manila time. Count = (today in Asia/Manila minus the start date) + 1.
