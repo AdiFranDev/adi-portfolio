@@ -15,7 +15,8 @@ export type WorkCard = {
   dates: string
   desc: string
   highlights: string[]
-  photo: PhotoSpec
+  // Up to three photos; the card crossfades between them as the page scrolls.
+  photos: PhotoSpec[]
 }
 
 export type ProjectCard = WorkCard & {
@@ -36,11 +37,11 @@ export const experiences: WorkCard[] = [
     dates: "Apr to Jul 2026 · 4 months",
     desc: "Designed and built smart farming systems, including ESP32 sensor networks for environmental monitoring and automated greenhouse control, and worked across the stack with Supabase, Flutter, and Next.js.",
     highlights: ["ESP32 sensor networks", "Supabase schemas", "Greenhouse SOPs", "Agri-Youth media"],
-    photo: {
-      file: "/images/experiences/fresco-intern.webp",
-      alt: "Adrian at the Fresco Greenovations greenhouse",
-      label: "At the Fresco greenhouse. 1200 × 900",
-    },
+    photos: [
+      { file: "/images/experiences/fresco-intern-1.webp", alt: "Adrian wiring an ESP32 sensor node beside a hydroponic tower", label: "Fresco 1" },
+      { file: "/images/experiences/fresco-intern-2.webp", alt: "The Fresco Greenovations team in their office", label: "Fresco 2" },
+      { file: "/images/experiences/fresco-intern-3.webp", alt: "Adrian setting up a sensor board at a workshop", label: "Fresco 3" },
+    ],
   },
   {
     id: "filipinovation",
@@ -51,12 +52,16 @@ export const experiences: WorkCard[] = [
     org: "2026 Presidential Filipinovation Awards",
     dates: "2026 · with the Fresco team",
     desc: "Advanced as a Mindanao finalist with the Fresco Greenovations team, contributing to the booth presentation.",
-    highlights: ["Booth presentation", "Team entry", "[Add one]", "[Add one]"],
-    photo: {
-      file: "/images/experiences/filipinovation.webp",
-      alt: "The Fresco Greenovations booth at the Filipinovation Awards",
-      label: "The Filipinovation booth. 1200 × 900",
-    },
+    highlights: [
+      "Team entry: Fresco Farm Management System",
+      "Booth for the farm management system and weather station",
+      "Networking with people from different fields",
+    ],
+    photos: [
+      { file: "/images/experiences/filipinovation-1.webp", alt: "The team at the Filipinovation Awards photo booth", label: "Filipinovation 1" },
+      { file: "/images/experiences/filipinovation-2.webp", alt: "The team in front of the Filipinovation Awards banner in Ozamiz City", label: "Filipinovation 2" },
+      { file: "/images/experiences/filipinovation-3.webp", alt: "Presenting the farm management system at the booth (photo: Philippine Information Agency)", label: "Filipinovation 3" },
+    ],
   },
 ]
 
@@ -82,11 +87,13 @@ export const waves: { id: Wave; n: string; label: string }[] = [
   { id: "awards", n: "05", label: "Awards" },
 ]
 
-const photo = (id: string, label: string): PhotoSpec => ({
-  file: `/images/projects/${id}.webp`,
-  alt: label,
-  label: `${label}. 1200 × 900`,
-})
+// Three photo slots per project: /images/projects/<id>-1.webp, -2 and -3.
+const photo = (id: string, label: string): PhotoSpec[] =>
+  [1, 2, 3].map((k) => ({
+    file: `/images/projects/${id}-${k}.webp`,
+    alt: label,
+    label: `${label} (${k} of 3). 1200 × 900`,
+  }))
 const todo = ["[Highlight]", "[Highlight]", "[Highlight]", "[Highlight]"]
 
 // Selected work (spec 4.5). Text in [brackets] is for Adrian to fill in.
@@ -103,7 +110,7 @@ export const projects: ProjectCard[] = [
     dates: "Jan to Jul 2025",
     desc: "Applies the capacity-scaled Edmonds-Karp algorithm to evacuation routing across the Downtown District 2 barangays of Cagayan de Oro, to find where routes bottleneck under limited road capacity.",
     highlights: ["Max-flow road network", "Bottleneck analysis", "C++ and Python", "[A measured result]"],
-    photo: photo("csek", "Figure: the road network with flow bottlenecks highlighted"),
+    photos: photo("csek", "Figure: the road network with flow bottlenecks highlighted"),
     link: { label: "Repository", href: null },
   },
   {
@@ -117,7 +124,7 @@ export const projects: ProjectCard[] = [
     dates: "2026 to 2027",
     desc: "[One or two lines on the problem, the approach, and where it stands.]",
     highlights: todo,
-    photo: photo("thesis", "Thesis figure or diagram"),
+    photos: photo("thesis", "Thesis figure or diagram"),
     link: { label: "Paper", href: null },
   },
   {
@@ -131,7 +138,7 @@ export const projects: ProjectCard[] = [
     dates: "[Dates]",
     desc: "[One or two lines on what it finds and how: KMP, Levenshtein, Aho-Corasick.]",
     highlights: ["KMP", "Levenshtein distance", "Aho-Corasick", "[Highlight]"],
-    photo: photo("automotif", "AutoMotif screen or figure"),
+    photos: photo("automotif", "AutoMotif screen or figure"),
     link: { label: "Repository", href: null },
   },
   // ---------- 02 Apps in development ----------
@@ -146,7 +153,7 @@ export const projects: ProjectCard[] = [
     dates: "[Started]",
     desc: "[What it does and who it is for, in one or two lines.]",
     highlights: todo,
-    photo: photo("app-1", "App screen"),
+    photos: photo("app-1", "App screen"),
     link: { label: "Open app", href: null },
   },
   {
@@ -160,7 +167,7 @@ export const projects: ProjectCard[] = [
     dates: "[Started]",
     desc: "[What it does and who it is for, in one or two lines.]",
     highlights: todo,
-    photo: photo("app-2", "App screen"),
+    photos: photo("app-2", "App screen"),
     link: { label: "Repository", href: null },
   },
   // ---------- 04 Community ----------
@@ -175,7 +182,7 @@ export const projects: ProjectCard[] = [
     dates: "[Dates]",
     desc: "[What it did, for whom, and with which partners.]",
     highlights: ["Outstanding Project of the Year 2026", "[Highlight]", "[Highlight]", "[Highlight]"],
-    photo: photo("agrivanture", "AgriVANture session photo"),
+    photos: photo("agrivanture", "AgriVANture session photo"),
   },
   {
     id: "project-3k",
@@ -188,7 +195,7 @@ export const projects: ProjectCard[] = [
     dates: "[Dates]",
     desc: "[What it did, for whom, and with which partners.]",
     highlights: ["₱50,000 grant", "[Highlight]", "[Highlight]", "[Highlight]"],
-    photo: photo("project-3k", "Project 3K photo"),
+    photos: photo("project-3k", "Project 3K photo"),
   },
   {
     id: "cs3-congress",
@@ -201,7 +208,7 @@ export const projects: ProjectCard[] = [
     dates: "[Dates]",
     desc: "[What it was, who came, and your role.]",
     highlights: todo,
-    photo: photo("cs3-congress", "CS³ Congress photo"),
+    photos: photo("cs3-congress", "CS³ Congress photo"),
   },
   // ---------- 05 Awards ----------
   {
@@ -215,7 +222,7 @@ export const projects: ProjectCard[] = [
     dates: "2026",
     desc: "[What the award recognized, in one or two lines.]",
     highlights: todo,
-    photo: photo("kahamili", "Kahamili awarding"),
+    photos: photo("kahamili", "Kahamili awarding"),
   },
   {
     id: "batang-lider",
@@ -228,7 +235,7 @@ export const projects: ProjectCard[] = [
     dates: "2026",
     desc: "[What the award recognized, in one or two lines.]",
     highlights: todo,
-    photo: photo("batang-lider", "Batang Lider awarding"),
+    photos: photo("batang-lider", "Batang Lider awarding"),
   },
   {
     id: "volunteer-of-the-year",
@@ -241,6 +248,6 @@ export const projects: ProjectCard[] = [
     dates: "2026",
     desc: "[What the award recognized, in one or two lines.]",
     highlights: todo,
-    photo: photo("volunteer-of-the-year", "Volunteer of the Year awarding"),
+    photos: photo("volunteer-of-the-year", "Volunteer of the Year awarding"),
   },
 ]

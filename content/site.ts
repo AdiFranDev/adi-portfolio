@@ -25,46 +25,68 @@ export const hero = {
     { lang: "ja", text: "こんにちは、アドリアンです！" },
   ],
   tagline: "Algorithms, urban farms, and student institutions, built with the same care.",
-  // The tagline, taken apart into nodes for the hero graph.
+  // The other graph nodes. Academic side (left) and community side (right); Empathy
+  // sits on Adrian's back, under the 4-H logo, and joins both sides.
   topics: [
-    { id: "algorithms", label: "Algorithms", n: "04" },
-    { id: "farms", label: "Urban farms", n: "05" },
-    { id: "institutions", label: "Student institutions", n: "06" },
-    // On Adrian's back, under the 4-H logo; joined to every other node.
-    { id: "empathy", label: "Empathy", n: "07" },
+    { id: "scholar", label: "Scholar", n: "02", note: "city scholar, CHED-UniFAST" },
+    { id: "farms", label: "Urban farms", n: "03", note: "Fresco Greenovations" },
+    { id: "initiative", label: "Initiative", n: "04", note: "I start before I'm asked" },
+    { id: "program", label: "Program Director", n: "07", note: "AgriVANture, AgriCARE" },
+    { id: "action", label: "Action", n: "08", note: "plans that leave the page" },
+    { id: "empathy", label: "Empathy", n: "09", note: "where every side starts" },
+    // Beneath Empathy, in green; joined only to Empathy. `late`: shows only near the
+    // end of the hero scroll.
+    { id: "impact", label: "Impact", n: "10", tone: "green", late: true },
+  ],
+  // Phones have no graph; they list the nodes in these two groups instead.
+  groups: [
+    { title: "Academic", ids: ["researcher", "scholar", "farms", "initiative"] },
+    { title: "Community", ids: ["creative", "student", "program", "action"] },
   ],
   // Where each node sits on the farm scene (share of the screen) and which pairs are
-  // joined. Nodes stay at the sides; no edge crosses the middle.
+  // joined. Nodes stay at the sides; edges that cross the middle dip under Adrian's head.
   graph: {
     place: {
-      researcher: { x: 0.05, y: 0.45, tilt: -3 },
-      algorithms: { x: 0.21, y: 0.66 },
-      farms: { x: 0.07, y: 0.8 },
-      creative: { x: 0.78, y: 0.4, tilt: -2 },
-      community: { x: 0.71, y: 0.6, tilt: 2 },
-      institutions: { x: 0.83, y: 0.79 },
-      empathy: { x: 0.5, y: 0.87 },
+      // Each side steps down in even rows (36, 53, 70, 87% of the height), zigzagging
+      // outer, inner, outer, inner; the right side mirrors the left.
+      researcher: { x: 0.05, y: 0.36, tilt: -3 },
+      scholar: { x: 0.2, y: 0.53, tilt: -2 },
+      farms: { x: 0.07, y: 0.7 },
+      initiative: { x: 0.28, y: 0.87, tilt: 2 },
+      creative: { x: 0.79, y: 0.36, tilt: -2 },
+      student: { x: 0.65, y: 0.53, tilt: -2 },
+      program: { x: 0.8, y: 0.7, tilt: 2 },
+      action: { x: 0.6, y: 0.87, tilt: -2 },
+      empathy: { x: 0.5, y: 0.82 },
+      // Beneath Empathy, at the foot of the scene.
+      impact: { x: 0.5, y: 0.97 },
     },
     edges: [
-      ["researcher", "algorithms"],
-      ["algorithms", "farms"],
+      // Each side is a chain down its zigzag; Empathy joins every node.
+      ["researcher", "scholar"],
+      ["scholar", "farms"],
+      ["farms", "initiative"],
       ["researcher", "farms"],
-      ["creative", "community"],
-      ["community", "institutions"],
-      ["creative", "institutions"],
+      ["creative", "student"],
+      ["student", "program"],
+      ["program", "action"],
+      ["creative", "program"],
       ["empathy", "researcher"],
-      ["empathy", "algorithms"],
+      ["empathy", "scholar"],
       ["empathy", "farms"],
-      ["empathy", "community"],
+      ["empathy", "initiative"],
       ["empathy", "creative"],
-      ["empathy", "institutions"],
+      ["empathy", "student"],
+      ["empathy", "program"],
+      ["empathy", "action"],
+      ["empathy", "impact"],
     ],
   },
   cvHref: "/cv.pdf",
   sides: [
     { id: "researcher", label: "Researcher", n: "01", href: "#projects", note: "graphs that route people out of floods" },
-    { id: "community", label: "Community leader", n: "02", href: "#projects", note: "4-H, CS³ and the city scholars" },
-    { id: "creative", label: "Creative Developer", n: "03", href: "#projects", note: "I build what I design" },
+    { id: "creative", label: "Creative Developer", n: "05", href: "#projects", note: "I build what I design" },
+    { id: "student", label: "Student-Leader", n: "06", href: "#projects", note: "senior advisor in three orgs" },
   ],
   photos: {
     background: {
@@ -110,7 +132,8 @@ export const hero = {
   status: string
   greetings: { lang: string; text: string }[]
   tagline: string
-  topics: { id: string; label: string; n: string }[]
+  topics: { id: string; label: string; n: string; note?: string; tone?: "green"; late?: boolean }[]
+  groups: { title: string; ids: string[] }[]
   graph: { place: Record<string, { x: number; y: number; tilt?: number }>; edges: [string, string][] }
   cvHref: string
   sides: { id: string; label: string; n: string; href: string; note: string }[]

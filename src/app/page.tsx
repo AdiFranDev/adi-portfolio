@@ -46,7 +46,7 @@ export default function Page() {
             itemLabel="experience"
             exitBlur
             soon="Certifications"
-            cards={experiences.map((c) => ({ ...c, photo: resolvePhoto(c.photo) }))}
+            cards={experiences.map((c) => ({ ...c, photos: c.photos.map(resolvePhoto) }))}
           />
           <WordScene word="SELECTED WORK" section="projects" entry="blur" />
           <SideScroll
@@ -58,7 +58,7 @@ export default function Page() {
             highlightOrder={highlightOrder}
             max={CATEGORY_MAX}
             moreLinks={moreLinks}
-            cards={projects.map((c) => ({ ...c, photo: resolvePhoto(c.photo) }))}
+            cards={projects.map((c) => ({ ...c, photos: c.photos.map(resolvePhoto) }))}
           />
           <Moments
             moments={moments.map((m) => ({ ...m, photo: resolvePhoto(m.photo) }))}

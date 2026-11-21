@@ -697,6 +697,10 @@ html:not([data-intro="play"]) .site-nav > * {
 .adrian-in {
   animation: adrian-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms both;
 }
+/* FRANCIS uses the same entrance, slower and first. */
+.francis-in {
+  animation: adrian-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 @keyframes adrian-in {
   from {
     clip-path: inset(-20% 100% -20% -20%);
@@ -711,7 +715,8 @@ html:not([data-intro="play"]) .site-nav > * {
 }
 @media (prefers-reduced-motion: reduce) {
   .adrian-wait,
-  .adrian-in {
+  .adrian-in,
+  .francis-in {
     clip-path: none;
     animation: none;
   }

@@ -7,7 +7,6 @@ import type { Photo } from "@/lib/photos"
 import { PhotoSlot } from "@/components/site/photo-slot"
 import { cn } from "@/lib/utils"
 import { NameGlitch } from "@/components/site/name-glitch"
-import { FrancisGraph } from "@/components/site/francis-graph"
 import { GreetingCycle } from "@/components/site/greeting-cycle"
 import { HeroGraph, type GraphNode } from "@/components/site/hero-graph"
 
@@ -108,17 +107,20 @@ export function Hero({ background, farm, cutout, cutoutFarm, leavesLeft, leavesR
             front: the farm, FRANCIS (dots that build in), ADRIAN, then Adrian himself. The h1 has no opacity of its own (that would flatten the
             layers); each word fades on its own instead. */}
         {/* Frame 2: the greeting, cycling through Adrian's five languages, above the name. */}
-        <div className="absolute inset-x-0 top-[72px] z-[7] flex justify-center opacity-[clamp(0,calc((var(--p)-0.45)*2.5),1)] md:top-[calc(var(--name-top)-2.6rem)]">
-          <GreetingCycle greetings={hero.greetings} className="rounded-full bg-background/70 px-4 py-1.5 text-[15px] font-semibold backdrop-blur-sm md:text-lg" />
+        <div className="absolute inset-x-0 top-[82px] z-[7] flex justify-center opacity-[clamp(0,calc((var(--p)-0.45)*2.5),1)] md:top-[calc(var(--name-top)-2.6rem)]">
+          <GreetingCycle greetings={hero.greetings} className="rounded-full bg-background/70 px-3 py-0.5 text-[12px] font-semibold backdrop-blur-sm md:px-4 md:py-1.5 md:text-lg" />
         </div>
 
         <h1
           id="hero-name"
-          className="absolute inset-x-0 top-[110px] m-0 flex flex-col items-center font-display text-[64px] leading-[0.92] font-extrabold tracking-[-0.03em] md:top-(--name-top) md:flex-row md:items-end md:justify-center md:gap-x-[0.28em] md:text-(length:--name-size)"
+          className="absolute inset-x-0 top-[116px] m-0 flex flex-col items-center font-display text-[64px] leading-[0.92] font-extrabold tracking-[-0.03em] md:top-(--name-top) md:flex-row md:items-end md:justify-center md:gap-x-[0.28em] md:text-(length:--name-size)"
         >
           <span className="sr-only">Francis Adrian Esteban</span>
           <span className="relative z-[2] opacity-[clamp(0,calc((var(--p)-0.3)*2),1)]">
-            <FrancisGraph text="FRANCIS" play={played} />
+            {/* Same type and entrance as ADRIAN, a little slower, in ink. */}
+            <span aria-hidden="true" className={cn("block text-foreground", played ? "francis-in" : "adrian-wait")}>
+              FRANCIS
+            </span>
           </span>
           <span className="relative z-[4] opacity-[clamp(0,calc((var(--p)-0.3)*2),1)]">
             {/* Hidden until the farm frame arrives, then wipes in left to right as
@@ -201,25 +203,53 @@ export function Hero({ background, farm, cutout, cutoutFarm, leavesLeft, leavesR
           <ArrowDown className="size-5" />
         </div>
 
-        {/* Phones: the tagline on a sheet below Adrian. Desktop: the graph says it, so the
-            sentence stays for screen readers only. */}
-        <div className="absolute inset-x-0 top-[530px] bottom-0 z-[7] rounded-t-[18px] bg-background p-5 opacity-[clamp(0,calc((var(--p)-0.6)*2.5),1)] md:sr-only">
-          <p className="m-0 text-base leading-[1.55]">{hero.tagline}</p>
+        {/* Phones: the graph's nodes as two lists side by side, Academic and Community,
+            with Empathy below joining them. Desktop: the graph shows them, and the
+            tagline stays for screen readers only. */}
+        <p className="sr-only">{hero.tagline}</p>
+        <div className="absolute inset-x-0 top-[470px] bottom-0 z-[7] flex flex-col gap-3.5 rounded-t-[18px] bg-background p-5 opacity-[clamp(0,calc((var(--p)-0.6)*2.5),1)] md:hidden">
+          <div className="grid grid-cols-2 gap-4">
+            {hero.groups.map((group) => (
+              <div key={group.title} className="flex min-w-0 flex-col gap-3">
+                <h2 className="type-label m-0 font-normal">{group.title}</h2>
+                <ol className="relative m-0 flex list-none flex-col gap-3 p-0">
+                  <span aria-hidden="true" className="absolute top-3 bottom-3 left-3 w-px bg-border" />
+                  {group.ids.map((id) => {
+                    const node = graphNodes.find((n) => n.id === id)
+                    if (!node) return null
+                    return (
+                      <li key={id} className="relative grid grid-cols-[24px_minmax(0,1fr)] gap-x-2.5">
+                        <span className="relative z-10 flex size-6 items-center justify-center rounded-full border border-input bg-background font-mono text-[11px] font-semibold">
+                          {node.n}
+                        </span>
+                        <span className="flex min-w-0 flex-col pt-0.5">
+                          <span className="text-[14px] leading-tight font-semibold">{node.label}</span>
+                          {node.note && <span className="font-hand text-[16px] leading-tight text-muted-foreground">{node.note}</span>}
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ol>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-center gap-5 border-t border-border pt-3">
+          {graphNodes
+            .filter((n) => n.id === "empathy" || n.id === "impact")
+            .map((n) => (
+              <p key={n.id} className="m-0 flex items-center gap-2 text-[14px] font-semibold">
+                <span className={cn("size-2.5 rounded-full", n.tone === "green" ? "bg-brand-green" : "bg-primary")} aria-hidden="true" />
+                <span className="font-mono text-[11px] opacity-60">{n.n}</span>
+                {n.label}
+                {n.id === "empathy" && <span className="font-normal text-muted-foreground">joins both</span>}
+              </p>
+            ))}
+          </div>
         </div>
 
-        {/* Frame 2: the graph of roles and topics, at the sides of the scene, plus a note
-            on the 4-H shirt. Desktop only. */}
+        {/* Frame 2: the graph of roles and topics, at the sides of the scene. Desktop only. */}
         <div className="pointer-events-none absolute inset-0 z-[7] hidden opacity-[clamp(0,calc((var(--p)-0.7)*3.3),1)] md:block">
           <HeroGraph nodes={graphNodes} edges={hero.graph.edges} play={played} />
-          <span
-            aria-hidden="true"
-            className="absolute bottom-[19%] left-[calc(50%+150px)] flex items-center gap-1.5 font-hand text-[22px] leading-none text-foreground opacity-[clamp(0,calc((var(--p)-0.8)*5),1)] drop-shadow-[0_1px_2px_color-mix(in_oklab,var(--background)_80%,transparent)]"
-          >
-            <svg viewBox="0 0 40 20" className="h-4 w-8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M38 6 C 26 2, 14 4, 4 14 M4 14 L 12 13 M4 14 L 6 6" />
-            </svg>
-            my 4-H shirt
-          </span>
         </div>
       </div>
       {/* Snap target: the end of the zoom lands on frame 2. */}

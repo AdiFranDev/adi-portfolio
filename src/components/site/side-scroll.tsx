@@ -18,7 +18,7 @@ export type SideCard = {
   dates: string
   desc: string
   highlights: string[]
-  photo: Photo
+  photos: Photo[]
   wave?: Category
   link?: { label: string; href: string | null }
 }
@@ -352,6 +352,84 @@ function SoonButton({ label }: { label: string }) {
   )
 }
 
+// Scroll distance (px) per photo change in a card's gallery.
+const FLIP_EVERY = 420
+
+/**
+ * A card's photos, stacked and crossfading. The shown photo follows the page
+ * scroll (one step every FLIP_EVERY px), so photos change as the cards slide by;
+ * the dots, or a click on the photo, pick one directly. Reduced motion: photos
+ * change only on click, without the fade.
+ */
+function CardGallery({ photos, label }: { photos: Photo[]; label: string }) {
+  const [step, setStep] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const count = photos.length
+
+  useEffect(() => {
+    if (count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        setStep(Math.floor(window.scrollY / FLIP_EVERY))
+      })
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [count])
+
+  const shown = count ? (((step + offset) % count) + count) % count : 0
+  const show = (i: number) => setOffset((o) => o + i - shown)
+
+  return (
+    <>
+      {photos.map((photo, i) => (
+        <div
+          key={photo.file}
+          aria-hidden={i !== shown}
+          onClick={() => count > 1 && show((shown + 1) % count)}
+          className={cn(
+            "absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none",
+            count > 1 && "cursor-pointer",
+            i === shown ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <PhotoSlot
+            photo={photo}
+            sizes="(min-width: 768px) 460px, 300px"
+            className="size-full rounded-sm md:rounded-none"
+            imageClassName="grayscale transition-[filter] duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0"
+          />
+        </div>
+      ))}
+      {count > 1 && (
+        <div className="absolute right-3 bottom-3 z-10 flex gap-1.5 rounded-full bg-(--glass) px-2 py-1.5 backdrop-blur-sm md:right-4 md:bottom-4">
+          {photos.map((photo, i) => (
+            <button
+              suppressHydrationWarning
+              key={photo.file}
+              type="button"
+              aria-label={`${label}, photo ${i + 1} of ${count}`}
+              aria-pressed={i === shown}
+              onClick={() => show(i)}
+              className={cn(
+                "size-2 rounded-full transition-[background-color,width] duration-300 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                i === shown ? "w-5 bg-foreground" : "bg-foreground/35 hover:bg-foreground/60",
+              )}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
 type CardProps = { card: SideCard; index: number; dim: boolean }
 
 function Card({ card, index, dim }: CardProps) {
@@ -371,12 +449,7 @@ function Card({ card, index, dim }: CardProps) {
       </div>
 
       <div className="relative mx-3 mt-3 h-[150px] overflow-hidden rounded-sm md:row-span-2 md:mx-0 md:mt-0 md:h-auto md:rounded-none">
-        <PhotoSlot
-          photo={card.photo}
-          sizes="(min-width: 768px) 460px, 300px"
-          className="size-full rounded-sm md:rounded-none"
-          imageClassName="grayscale transition-[filter] duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0"
-        />
+        <CardGallery photos={card.photos} label={card.role} />
         <span className="absolute bottom-4 left-4 hidden rounded-sm bg-(--glass) px-2.5 py-1 font-mono text-[13px] tracking-[0.08em] uppercase backdrop-blur-sm md:block">
           {card.dates}
         </span>
