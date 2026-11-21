@@ -97,7 +97,7 @@ export function Skills({ tools, skills, affiliations }: SkillsProps) {
             render={(o, lit) => (
               <div
                 data-lit={lit}
-                className="group flex h-16 shrink-0 items-center gap-3 rounded-full border border-input bg-background px-5 transition-[border-color,transform] duration-300 ease-out hover:-translate-y-1 hover:border-foreground data-[lit=true]:border-foreground md:h-[72px]"
+                className="group flex h-16 shrink-0 items-center gap-3 rounded-full border border-input bg-background px-5 transition-[border-color,background-color,box-shadow] duration-300 ease-out hover:border-brand-green/60 hover:bg-[color-mix(in_oklab,var(--brand-green)_6%,var(--background))] hover:shadow-[0_2px_12px_color-mix(in_oklab,var(--brand-green)_14%,transparent)] data-[lit=true]:border-brand-green/60 data-[lit=true]:bg-[color-mix(in_oklab,var(--brand-green)_6%,var(--background))] md:h-[72px]"
               >
                 {o.logo ? (
                   <span
