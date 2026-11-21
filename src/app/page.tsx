@@ -28,10 +28,12 @@ export default function Page() {
       <main id="main">
         <Hero
           background={resolvePhoto(h.background)}
+          farm={resolvePhoto(h.farm)}
           cutout={resolvePhoto(h.cutout)}
+          cutoutFarm={resolvePhoto(h.cutoutFarm)}
           leavesLeft={resolvePhoto(h.leavesLeft)}
           leavesRight={resolvePhoto(h.leavesRight)}
-          plants={resolvePhoto(h.plants)}
+          leavesMiddle={resolvePhoto(h.leavesMiddle)}
         />
         <About academic={resolvePhoto(about.photos.academic)} community={resolvePhoto(about.photos.community)} />
         <div id="portfolio">

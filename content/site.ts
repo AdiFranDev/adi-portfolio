@@ -16,7 +16,14 @@ export const profiles = {
 
 export const hero = {
   status: "[STATUS: open to opportunities, confirm wording]",
-  greeting: "[GREETING in Cebuano or Waray]",
+  // One greeting per language Adrian speaks; the hero cycles through them.
+  greetings: [
+    { lang: "en", text: "Hello, I'm Adrian!" },
+    { lang: "ceb", text: "Maayong adlaw! Ako si Adrian." },
+    { lang: "fil", text: "Magandang araw, ako si Adrian!" },
+    { lang: "tl", text: "Kumusta! Ako si Adrian." },
+    { lang: "ja", text: "こんにちは、アドリアンです！" },
+  ],
   tagline: "Algorithms, urban farms, and student institutions, built with the same care.",
   cvHref: "/cv.pdf",
   sides: [
@@ -26,34 +33,47 @@ export const hero = {
   ],
   photos: {
     background: {
-      file: "/images/hero/background.webp",
+      file: "/images/hero/campus.webp",
       alt: "",
-      label: "Background photo: a Cagayan de Oro landscape, farm, or campus at dusk. 2560 × 1600",
+      label: "Frame 1 background: the USTP campus. 2560 × 1440",
+    },
+    // Frame 2: the campus blurs away into this.
+    farm: {
+      file: "/images/hero/farm.webp",
+      alt: "",
+      label: "Frame 2 background: farmland. 2560 × 1600",
     },
     cutout: {
       file: "/images/hero/cutout.webp",
-      alt: "Francis Adrian Esteban",
-      label: "Adrian cutout, transparent WebP, about 1600 px tall",
+      alt: "Adrian seen from behind, facing the campus",
+      label: "Adrian cutout, from behind, transparent WebP",
     },
+    // Same cutout in the 4-H shirt; it takes over when the farm comes in.
+    cutoutFarm: {
+      file: "/images/hero/cutout-farm.webp",
+      alt: "Adrian seen from behind, in his 4-H shirt",
+      label: "Adrian cutout, from behind, 4-H shirt, transparent WebP",
+    },
+    // The foreground garden, one image cut into three pieces that part on scroll.
     leavesLeft: {
-      file: "/images/hero/leaves-left.webp",
+      file: "/images/hero/bloom-left.webp",
       alt: "",
-      label: "Foreground leaves, left, transparent WebP",
+      label: "Foreground garden, left piece (0-40%), transparent WebP",
+    },
+    leavesMiddle: {
+      file: "/images/hero/bloom-middle.webp",
+      alt: "",
+      label: "Foreground garden, middle piece (34-66%), transparent WebP",
     },
     leavesRight: {
-      file: "/images/hero/leaves-right.webp",
+      file: "/images/hero/bloom-right.webp",
       alt: "",
-      label: "Foreground leaves, right, transparent WebP",
-    },
-    plants: {
-      file: "/images/hero/plants-bottom.webp",
-      alt: "",
-      label: "Plants along the bottom edge, transparent WebP",
+      label: "Foreground garden, right piece (60-100%), transparent WebP",
     },
   },
 } satisfies {
   status: string
-  greeting: string
+  greetings: { lang: string; text: string }[]
   tagline: string
   cvHref: string
   sides: { id: string; label: string; n: string; href: string }[]
@@ -74,12 +94,12 @@ export const about = {
   photos: {
     academic: {
       file: "/images/about/academic.webp",
-      alt: "Adrian in his university uniform",
-      label: "Photo A · Academic: formal or university uniform, front-facing. 1200 × 1500",
+      alt: "Adrian in his BS Computer Science shirt on campus",
+      label: "Photo A · Academic: on campus, front-facing. 1200 × 1500",
     },
     community: {
       file: "/images/about/community.webp",
-      alt: "Adrian in his 4-H shirt",
+      alt: "Adrian in his 4-H shirt at a seedling area",
       label: "Photo B · Community leader: 4-H shirt or field clothes, same pose, framing, and light as Photo A",
     },
   } satisfies Record<string, PhotoSpec>,

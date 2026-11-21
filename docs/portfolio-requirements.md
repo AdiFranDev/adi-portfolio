@@ -158,14 +158,15 @@ Each spec lists: purpose, transition in, contents, interaction, transition out, 
 **Purpose:** a cinematic opening: the visitor steps out of a field and sees Adrian from behind.
 
 **Contents (three photo layers, back to front):**
-1. Background: a Cagayan de Oro landscape, farm or campus at dusk.
+1. Background: the USTP campus (glass tower), upscaled for sharpness. No logo.
 2. Adrian cutout seen from behind (transparent).
-3. Foreground leaves on the left and right, and plants along the bottom edge (transparent).
+3. Foreground garden (transparent): Adrian's chosen garden image (bushes with hibiscus, bells and tomatoes on both sides, a flower meadow in the middle), upscaled and cut into three feathered pieces where the bushes meet the meadow: left 0-40%, middle 34-66%, right 60-100%. At rest they line up into one picture, a little larger than the screen and sunk so its soft bottom edge is off-screen; the meadow piece sits lower so the flowers reach Adrian's waist.
 4. The nav and a "Scroll" cue. No other text.
 
 **Transition (the "boom", one scroll):** scroll progress 0 to 1 over the sticky scene:
-- leaves slide out to the sides (±40% X) and fade
-- background scales 1.15 to 1
+- the garden's side pieces slide out to the sides and the meadow piece sinks, all fading
+- the bottom of the scene (photos and cutout) fades to transparent with a soft blur band, so the hero dissolves into the page instead of ending in a hard edge
+- background scales 1.15 to 1, and the campus blurs and fades into a farmland photo underneath; a light bone-white wash fades in over the farm so the name and text stay readable; as the farm comes in, Adrian's cutout changes from the black shirt to the 4-H shirt (same pose, crossfade)
 - the cutout scales 1 to about 0.92
 - the name fades in behind him, which is frame 2
 
@@ -178,6 +179,8 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 **Done when:** one scroll reaches frame 2 at 60 fps on a mid-range laptop, the page is never locked, and the LCP image is preloaded with `priority`.
 
 ### 4.2 Hero, after one scroll (frame 2)
+
+- The greeting cycles every 2.8 seconds through Adrian's five languages: English, Cebuano, Filipino, Tagalog, Japanese. Screen readers hear the English one once; reduced motion keeps it still.
 
 **Contents:**
 - Status badge (green): **[ADRIAN] confirm wording**, for example "Open to internships".
@@ -205,7 +208,7 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 - A center photo blend: academic photo and community photo.
 - Bio **[ADRIAN]**, View CV, View projects.
 
-**Photo blend interaction:** no buttons. Mouse: hovering opens the community photo out of the cursor as a growing circle until it fills the frame; leaving closes it back. Touch: a tap switches sides. Reduced motion: instant swap.
+**Photo blend interaction:** no frame or border; the photo's edges fade into the page. Mouse: a small soft circle follows the cursor (a white dot marks it) and shows the other photo inside it. A **Reveal** button under the photo opens the other photo out of the button as a growing circle, and closes it back on the next press; while revealed, the hover circle shows the academic photo. Touch: a tap does the same as the button. Reduced motion: instant swap.
 
 **Contents, Who I am band (three cards):**
 
@@ -220,7 +223,7 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 - There is no official public Duolingo API, so the count is computed, not fetched. Keep the start date and an optional manual override in one config constant (`content/streak.ts`), so Adrian can correct it if the streak ever breaks.
 - Render it on the server with the Manila date, and revalidate hourly so the page stays static.
 
-**Phone:** one column. The photo blend uses only the two-button switch. The cards stack.
+**Phone:** one column. The photo blend uses tap or the Reveal button. The cards stack.
 
 **Assets:** 2 matching photos (same size, pose, framing and lighting), the bio. **[ADRIAN]**
 

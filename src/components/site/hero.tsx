@@ -8,13 +8,16 @@ import { PhotoSlot } from "@/components/site/photo-slot"
 import { NameGlitch } from "@/components/site/name-glitch"
 import { buttonStyles } from "@/components/site/ds"
 import { FrancisGraph } from "@/components/site/francis-graph"
+import { GreetingCycle } from "@/components/site/greeting-cycle"
 
 type HeroProps = {
   background: Photo
+  farm: Photo
   cutout: Photo
+  cutoutFarm: Photo
   leavesLeft: Photo
   leavesRight: Photo
-  plants: Photo
+  leavesMiddle: Photo
 }
 
 /**
@@ -22,7 +25,7 @@ type HeroProps = {
  * scene; scroll progress 0 to 1 is written to --p and every layer reads it.
  * Phones and reduced motion: --p is 1, the static frame 2.
  */
-export function Hero({ background, cutout, leavesLeft, leavesRight, plants }: HeroProps) {
+export function Hero({ background, farm, cutout, cutoutFarm, leavesLeft, leavesRight, leavesMiddle }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const sceneRef = useRef<HTMLDivElement>(null)
 
@@ -73,10 +76,20 @@ export function Hero({ background, cutout, leavesLeft, leavesRight, plants }: He
         style={{ "--p": 1 } as React.CSSProperties}
         className="relative h-[max(100svh,700px)] overflow-hidden md:sticky md:top-0 md:h-svh md:min-h-[640px]"
       >
-        {/* Layer 3: background photo */}
-        <div className="absolute inset-0 origin-center [transform:scale(calc(1.15-0.15*var(--p)))]">
-          <PhotoSlot photo={background} sizes="100vw" priority className="size-full" detail="full" place="top" />
+        {/* Layer 3: background. The campus blurs and fades away into the farm under it.
+            In frame 2 its bottom fades out so the scene dissolves into the page below. */}
+        <div className="absolute inset-0 origin-center [transform:scale(calc(1.15-0.15*var(--p)))] [mask-image:linear-gradient(to_bottom,#000_calc(100%_-_var(--p)*40%),transparent)]">
+          <PhotoSlot photo={farm} sizes="100vw" className="size-full" detail="full" place="top" />
+          <div className="absolute inset-0 opacity-[clamp(0,calc(1.7-var(--p)*2.4),1)] will-change-[filter,opacity] [filter:blur(calc(min(var(--p)*2,1)*18px))]">
+            <PhotoSlot photo={background} sizes="100vw" priority className="size-full" detail="full" place="top" />
+          </div>
         </div>
+
+        {/* Frame 2: a light wash over the farm so the name and text stay readable */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--background)_45%,transparent),color-mix(in_oklab,var(--background)_62%,transparent)_45%,color-mix(in_oklab,var(--background)_82%,transparent))] opacity-[clamp(0,calc((var(--p)-0.35)*2.5),1)] [mask-image:linear-gradient(to_bottom,#000_calc(100%_-_var(--p)*40%),transparent)]"
+        />
 
         {/* Frame 2: the name, behind the cutout */}
         <h1
@@ -88,28 +101,66 @@ export function Hero({ background, cutout, leavesLeft, leavesRight, plants }: He
           <NameGlitch />
         </h1>
 
-        {/* Layer 2: the cutout. In front of the name; it never blocks the name hover. */}
-        <div className="pointer-events-none absolute top-[200px] left-1/2 h-[330px] w-[150px] -translate-x-1/2 md:top-auto md:bottom-0 md:h-[57.8%] md:w-[16.7%] md:max-w-[260px] md:min-w-[170px] md:origin-bottom md:[scale:calc(1-0.1*var(--p))]">
+        {/* Layer 2: the cutout. In front of the name; it never blocks the name hover.
+            The 4-H shirt version fades in with the farm. */}
+        <div className="pointer-events-none absolute top-[190px] left-1/2 h-[340px] w-[190px] -translate-x-1/2 md:top-auto md:bottom-0 md:h-[62%] md:w-[22%] md:max-w-[360px] md:min-w-[200px] md:origin-bottom md:[scale:calc(1-0.1*var(--p))] md:[mask-image:linear-gradient(to_bottom,#000_calc(100%_-_var(--p)*30%),transparent)]">
           <PhotoSlot
             photo={cutout}
-            sizes="(min-width: 768px) 260px, 150px"
+            sizes="(min-width: 768px) 360px, 190px"
             priority
             detail="compact"
-            className="size-full rounded-t-full border-b-0"
+            // The arch frame is only for the placeholder; the real cutout stands free.
+            className={cutout.ready ? "size-full" : "size-full rounded-t-full border-b-0"}
             imageClassName="object-contain object-bottom"
           />
+          {cutout.ready && cutoutFarm.ready && (
+            <div className="absolute inset-0 opacity-[clamp(0,calc((var(--p)-0.4)*3.5),1)]">
+              <PhotoSlot photo={cutoutFarm} sizes="(min-width: 768px) 360px, 190px" className="size-full" imageClassName="object-contain object-bottom" />
+            </div>
+          )}
         </div>
 
-        {/* Layer 1: leaves and plants, gone after the first scroll */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/4 opacity-[calc(1-var(--p))] [transform:translateX(calc(-160%*var(--p)))] md:block">
-          <PhotoSlot photo={leavesLeft} sizes="25vw" detail="full" className="size-full border-brand-green" imageClassName="object-contain object-left" />
+        {/* Layer 1: the foreground garden, one image cut into three feathered pieces
+            (left 0-40%, middle 34-66%, right 60-100%, cut where the bushes meet the meadow). They share one size, --s, so at
+            rest they line up into the whole picture, a little larger than the screen and
+            sunk below its bottom edge. On the first scroll the sides slide out and the
+            middle sinks. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 hidden [container-type:size] md:block"
+          style={{ "--s": "max(110cqw, calc(100cqh * 2.2))" } as React.CSSProperties}
+        >
+          {(
+            [
+              { photo: leavesMiddle, from: 0.34, span: 0.32, sink: "12cqh", move: "translateY(calc(100% * var(--p)))" },
+              { photo: leavesLeft, from: 0, span: 0.4, sink: "0px", move: "translateX(calc(-100% * var(--p)))" },
+              { photo: leavesRight, from: 0.6, span: 0.4, sink: "0px", move: "translateX(calc(100% * var(--p)))" },
+            ] as const
+          ).map(({ photo, from, span, sink, move }) => (
+            <div
+              key={photo.file}
+              className="absolute opacity-[calc(1-var(--p))]"
+              style={{
+                left: `calc((100cqw - var(--s)) / 2 + var(--s) * ${from})`,
+                width: `calc(var(--s) * ${span})`,
+                height: "calc(var(--s) / 1.79)",
+                // Sunk by up to 28% of its height, so the soft bottom edge goes off-screen,
+                // but never so far that the bushes' top edge comes into view. The middle
+                // piece (meadow and sky) sinks further, so the flowers reach Adrian's waist.
+                bottom: `calc(max(calc(var(--s) / 1.79 * -0.28), calc(100cqh - var(--s) / 1.79)) - ${sink})`,
+                transform: move,
+              }}
+            >
+              <PhotoSlot photo={photo} sizes="60vw" detail="compact" className="size-full border-brand-green" imageClassName="object-cover" />
+            </div>
+          ))}
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/4 opacity-[calc(1-var(--p))] [transform:translateX(calc(160%*var(--p)))] md:block">
-          <PhotoSlot photo={leavesRight} sizes="25vw" detail="full" className="size-full border-brand-green" imageClassName="object-contain object-right" />
-        </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-[20%] opacity-[calc(1-var(--p))] [transform:translateY(calc(100%*var(--p)))] md:block">
-          <PhotoSlot photo={plants} sizes="100vw" detail="compact" place="top" className="size-full border-brand-green" imageClassName="object-contain object-bottom" />
-        </div>
+
+        {/* Frame 2: a soft blur band where the scene fades into the page */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] opacity-[clamp(0,calc((var(--p)-0.5)*2.5),1)] backdrop-blur-[6px] [mask-image:linear-gradient(to_bottom,transparent,#000_45%,#000_70%,transparent)]"
+        />
 
         {/* Scroll cue, frame 1 only */}
         <div
@@ -122,7 +173,7 @@ export function Hero({ background, cutout, leavesLeft, leavesRight, plants }: He
 
         {/* Frame 2: greeting, tagline, buttons. A sheet on phones keeps text off the photo. */}
         <div className="absolute inset-x-0 top-[530px] bottom-0 flex flex-col gap-3.5 rounded-t-[18px] bg-background p-5 opacity-[clamp(0,calc((var(--p)-0.6)*2.5),1)] md:inset-x-auto md:top-auto md:bottom-24 md:left-24 md:w-[380px] md:gap-4 md:rounded-none md:bg-transparent md:p-0">
-          <div className="text-[17px] font-semibold md:text-xl">{hero.greeting}</div>
+          <GreetingCycle greetings={hero.greetings} className="text-[17px] font-semibold md:text-xl" />
           <p className="m-0 text-base leading-[1.55] md:text-lg">{hero.tagline}</p>
           <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
             <a href="#projects" className={buttonStyles({ variant: "primary", size: "lg" })}>
