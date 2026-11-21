@@ -39,8 +39,8 @@ export const experiences: WorkCard[] = [
     highlights: ["ESP32 sensor networks", "Supabase schemas", "Greenhouse SOPs", "Agri-Youth media"],
     photos: [
       { file: "/images/experiences/fresco-intern-1.webp", alt: "Adrian wiring an ESP32 sensor node beside a hydroponic tower", label: "Fresco 1" },
-      { file: "/images/experiences/fresco-intern-2.webp", alt: "The Fresco Greenovations team in their office", label: "Fresco 2" },
-      { file: "/images/experiences/fresco-intern-3.webp", alt: "Adrian setting up a sensor board at a workshop", label: "Fresco 3" },
+      { file: "/images/experiences/fresco-team.webp", alt: "The Fresco Greenovations team in their office", label: "Fresco 2" },
+      { file: "/images/experiences/fresco-workshop.webp", alt: "Adrian setting up a sensor board at a workshop", label: "Fresco 3" },
     ],
   },
   {
@@ -58,7 +58,7 @@ export const experiences: WorkCard[] = [
       "Networking with people from different fields",
     ],
     photos: [
-      { file: "/images/experiences/filipinovation-1.webp", alt: "The team at the Filipinovation Awards photo booth", label: "Filipinovation 1" },
+      { file: "/images/experiences/filipinovation-booth.webp", alt: "A teammate presenting the farm management system and weather station at the booth (photo: National Innovation Council)", label: "Filipinovation 1" },
       { file: "/images/experiences/filipinovation-2.webp", alt: "The team in front of the Filipinovation Awards banner in Ozamiz City", label: "Filipinovation 2" },
       { file: "/images/experiences/filipinovation-3.webp", alt: "Presenting the farm management system at the booth (photo: Philippine Information Agency)", label: "Filipinovation 3" },
     ],
