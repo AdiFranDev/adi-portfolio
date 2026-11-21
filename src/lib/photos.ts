@@ -10,6 +10,8 @@ export type PhotoSpec = {
   file: string
   alt: string
   label: string
+  // "contain" shows the whole image (posters, graphics with text) instead of cropping it.
+  fit?: "contain"
 }
 
 export type Photo = PhotoSpec & { ready: boolean }
