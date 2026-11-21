@@ -26,15 +26,22 @@ export const tools: { id: string; name: string; logo: string | null; color: stri
   { id: "canva", name: "Canva", logo: null, color: null },
 ]
 
-// Community leadership skills and talents, in Adrian's words.
-export const leadership: string[] = [
-  "Legislation",
-  "Parliamentary procedure",
-  "Project creation",
-  "Spearheading",
-  "Grant proposal creation",
-  "Public speaking",
-  "Student-scholar-leader",
+// Skills, in Adrian's words.
+export const skills: string[] = [
+  "Scholar-student-leader",
+  "Constitutional Drafting",
+  "Grant Acquisition",
+  "Policy & Legislation",
+  "Program Direction",
+  "Agri-Tech Outreach",
+  "Electoral Governance",
+  "Social Innovation",
+  "Parliamentary Governance",
+  "Stakeholder Partnerships",
+  "Institutional Advocacy",
+  "Community Mobilization",
+  "Legal & Procedural Oversight",
+  "SDG Implementation",
 ]
 
 // Organization logos: Adrian uploads them (SVG first) to /public/logos/orgs/<id>.svg.
@@ -46,4 +53,6 @@ export const affiliations: { id: string; name: string; logo: string }[] = [
   { id: "fresco", name: "Fresco Greenovations Inc.", logo: "/logos/orgs/fresco.svg" },
   { id: "cdo-scholarship", name: "Cagayan de Oro City Scholarship Program", logo: "/logos/orgs/cdo-scholarship.svg" },
   { id: "ched-unifast", name: "CHED-UniFAST", logo: "/logos/orgs/ched-unifast.svg" },
+  { id: "duolingo", name: "Duolingo", logo: "/logos/orgs/duolingo.svg" },
+  { id: "isda", name: "Iskolar sa Dakbayan", logo: "/logos/orgs/isda.svg" },
 ]

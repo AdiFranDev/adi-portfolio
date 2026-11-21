@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Heart, ImagePlus } from "lucide-react"
 import { footer } from "@content/site"
 import { iconButtonStyles } from "@/components/site/ds"
-import { TuxedoCats } from "@/components/site/tuxedo-cats"
+import { CatBasket } from "@/components/site/tuxedo-cats"
 import { cn } from "@/lib/utils"
 
 const explore = [
@@ -22,9 +22,8 @@ const labelClass = "type-label"
 export function SiteFooter() {
   return (
     <footer className="relative border-t border-border text-foreground">
-      <TuxedoCats />
-      <div className="relative mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-24 md:px-16 xl:px-[120px]">
-        <div className="grid gap-10 md:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))] md:gap-8">
+      <div className="relative mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-8 md:px-16 xl:px-[120px]">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))_auto] md:gap-8">
           <div className="flex flex-col gap-4">
             <span className="type-display text-2xl">Adrian</span>
             {footer.quotes.map((q) => (
@@ -32,21 +31,22 @@ export function SiteFooter() {
                 “{q}”
               </blockquote>
             ))}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-              <ul className="m-0 flex list-none gap-2 p-0">
-                {footer.socials.map((s) => (
-                  <li key={s.name}>
-                    <SocialIcon name={s.name} href={s.href} icon={s.icon} />
-                  </li>
-                ))}
-              </ul>
-              <span className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground">
-                {footer.dedication.left}
-                <Heart aria-hidden="true" className="size-3.5 fill-primary text-primary" />
-                <span className="sr-only">loves</span>
-                {footer.dedication.right}
-              </span>
-            </div>
+            <ul className="m-0 flex list-none gap-2 p-0">
+              {footer.socials.map((s) => (
+                <li key={s.name}>
+                  <SocialIcon name={s.name} href={s.href} icon={s.icon} />
+                </li>
+              ))}
+            </ul>
+            <p className="group m-0 inline-flex w-fit cursor-default items-center gap-1.5 text-[13px] font-medium">
+              <span className="shine">{footer.dedication.left}</span>
+              <Heart
+                aria-hidden="true"
+                className="size-3.5 fill-primary text-primary transition-[scale,filter] duration-300 group-hover:scale-125 group-hover:drop-shadow-[0_0_6px_var(--primary)] motion-reduce:transition-none"
+              />
+              <span className="sr-only">loves</span>
+              <span className="shine">{footer.dedication.right}</span>
+            </p>
           </div>
 
           <nav aria-label="Footer" className="flex flex-col gap-3">
@@ -82,6 +82,9 @@ export function SiteFooter() {
             </ul>
           </div>
 
+          <div className="pt-6 md:self-end md:pt-0">
+            <CatBasket />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 border-t border-border pt-5 text-[13px] text-muted-foreground md:flex-row md:justify-between">

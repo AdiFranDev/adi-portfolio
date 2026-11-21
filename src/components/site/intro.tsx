@@ -77,6 +77,7 @@ export function Intro({ cameo }: IntroProps) {
   return (
     <div className="intro-overlay fixed inset-0 z-[70] bg-background text-foreground">
       <button
+        suppressHydrationWarning
         id="skip-intro"
         type="button"
         className={cn(buttonStyles({ variant: "secondary" }), "absolute top-5 right-5 z-10 md:top-6 md:right-14")}

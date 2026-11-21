@@ -8,11 +8,11 @@ export type OrgView = { id: string; name: string; logo: string | null }
 
 type SkillsProps = {
   tools: ToolView[]
-  leadership: string[]
+  skills: string[]
   affiliations: OrgView[]
 }
 
-export function Skills({ tools, leadership, affiliations }: SkillsProps) {
+export function Skills({ tools, skills, affiliations }: SkillsProps) {
   return (
     <section
       id="skills"
@@ -62,24 +62,30 @@ export function Skills({ tools, leadership, affiliations }: SkillsProps) {
           />
         </Row>
 
-        <Row label="Leadership and talents">
-          <Marquee
-            label="Leadership and talents"
-            speed={30}
-            reverse
-            items={leadership}
-            itemKey={(s) => s}
-            render={(s, lit) => (
-              <div
-                data-lit={lit}
-                className="group flex shrink-0 items-center py-2 pr-8 md:pr-14"
-              >
-                <span className="inline-block font-display text-[clamp(30px,4.4vw,60px)] leading-none font-extrabold tracking-[-0.02em] whitespace-nowrap text-input transition-[color,transform] duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105 group-hover:text-brand-green group-data-[lit=true]:text-brand-green">
-                  {s}
-                </span>
-              </div>
-            )}
-          />
+        <Row label="Skills">
+          {/* Two shorter rows, drifting in opposite directions, so a long list stays readable. */}
+          <div className="flex flex-col gap-1 md:gap-2">
+            {[skills.slice(0, Math.ceil(skills.length / 2)), skills.slice(Math.ceil(skills.length / 2))].map((line, i) => (
+              <Marquee
+                key={i}
+                label={i === 0 ? "Skills, first row" : "Skills, second row"}
+                speed={26}
+                reverse={i === 0}
+                items={line}
+                itemKey={(s) => s}
+                render={(s, lit) => (
+                  <div
+                    data-lit={lit}
+                    className="group flex shrink-0 items-center py-1.5 pr-6 md:pr-10"
+                  >
+                    <span className="inline-block font-display text-[clamp(22px,2.6vw,36px)] leading-none font-extrabold tracking-[-0.02em] whitespace-nowrap text-input transition-[color,transform] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:text-brand-green group-data-[lit=true]:text-brand-green">
+                      {s}
+                    </span>
+                  </div>
+                )}
+              />
+            ))}
+          </div>
         </Row>
 
         <Row label="Affiliations">

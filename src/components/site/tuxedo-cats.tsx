@@ -1,128 +1,107 @@
-"use client"
+// Six tuxedo cats peeking out of a basket. Hover or focus: they bob and say who they are.
 
-import { useEffect, useState } from "react"
+type Face = "open" | "sleepy" | "wink"
+type CatHead = { x: number; y: number; tilt: number; face: Face }
 
-type Pose = "sit" | "loaf" | "stretch"
-type Cat = { id: number; pose: Pose; zone: "ledge" | "floor"; x: number; scale: number; tilt: number; flip: boolean }
-
-const COUNT = 6
-const LEDGE = 2 // cats perched on the footer's top line; the rest sit along the bottom
-const POSES: Pose[] = ["sit", "loaf", "stretch"]
-const WIDTH: Record<Pose, number> = { sit: 46, loaf: 64, stretch: 78 }
-
-const rand = (min: number, max: number) => min + Math.random() * (max - min)
-
-// Spread cats across a zone so they never pile up: one per slot, jittered inside it.
-function place(n: number, from: number, to: number) {
-  const slot = (to - from) / n
-  return Array.from({ length: n }, (_, i) => from + slot * i + rand(slot * 0.15, slot * 0.75))
-}
-
-/**
- * Six tuxedo cats, a new arrangement on every visit: random pose, spot, size,
- * tilt, and facing. Decorative. They sit on the footer's edges, away from text.
- */
-export function TuxedoCats() {
-  const [cats, setCats] = useState<Cat[]>([])
-
-  useEffect(() => {
-    // Random layout is made after mount so server and client HTML match.
-    const ledgeX = place(LEDGE, 30, 92)
-    const floorX = place(COUNT - LEDGE, 2, 92)
-    const next: Cat[] = Array.from({ length: COUNT }, (_, i) => ({
-      id: i,
-      pose: POSES[Math.floor(Math.random() * POSES.length)] ?? "sit",
-      zone: i < LEDGE ? "ledge" : "floor",
-      x: (i < LEDGE ? ledgeX[i] : floorX[i - LEDGE]) ?? 50,
-      scale: rand(0.8, 1.2),
-      tilt: rand(-9, 9),
-      flip: Math.random() < 0.5,
-    }))
-    const frame = window.requestAnimationFrame(() => setCats(next))
-    return () => window.cancelAnimationFrame(frame)
-  }, [])
-
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-      {cats.map((cat) => (
-        <div
-          key={cat.id}
-          className="tux-cat pointer-events-auto absolute animate-in duration-500 fade-in zoom-in-75 motion-reduce:animate-none"
-          style={{
-            left: `${cat.x}%`,
-            ...(cat.zone === "ledge" ? { top: 1, translate: "0 -100%" } : { bottom: 0 }),
-            width: WIDTH[cat.pose] * cat.scale,
-            rotate: `${cat.tilt}deg`,
-            scale: cat.flip ? "-1 1" : undefined,
-            transformOrigin: "50% 100%",
-            animationDelay: `${cat.id * 90}ms`,
-          }}
-        >
-          <CatSvg pose={cat.pose} />
-        </div>
-      ))}
-    </div>
-  )
-}
+// Faces sit fully above the rim (y 70) so every cat is visible.
+const CATS: CatHead[] = [
+  { x: 36, y: 56, tilt: -10, face: "open" },
+  { x: 67, y: 48, tilt: 6, face: "sleepy" },
+  { x: 99, y: 44, tilt: -4, face: "open" },
+  { x: 131, y: 47, tilt: 8, face: "wink" },
+  { x: 162, y: 45, tilt: -6, face: "open" },
+  { x: 190, y: 55, tilt: 10, face: "sleepy" },
+]
 
 const INK = "var(--tux-ink)"
 const WHITE = "var(--tux-white)"
 const EYE = "#d9c34a"
 const NOSE = "#e88aa8"
 
-function CatSvg({ pose }: { pose: Pose }) {
-  if (pose === "loaf") {
-    return (
-      <svg viewBox="0 0 80 50" className="block w-full">
-        <path d="M66 44 C78 44 80 34 72 30" stroke={INK} strokeWidth="5" strokeLinecap="round" fill="none" />
-        <ellipse cx="44" cy="34" rx="27" ry="14" fill={INK} className="tux-ink" />
-        <polygon points="9,18 11,4 19,12" fill={INK} />
-        <polygon points="29,18 27,4 20,12" fill={INK} />
-        <circle cx="19" cy="24" r="12" fill={INK} className="tux-ink" />
-        <path d="M14 33 C16 40 22 44 28 46 L20 47 C14 44 12 38 14 33 Z" fill={WHITE} />
-        <ellipse cx="19" cy="29" rx="5.5" ry="4" fill={WHITE} />
-        <path d="M18 27.5 L20 27.5 L19 29 Z" fill={NOSE} />
-        <path d="M13 22 Q15 24 17 22 M21 22 Q23 24 25 22" stroke={WHITE} strokeWidth="1.3" fill="none" strokeLinecap="round" />
-        <ellipse cx="22" cy="47" rx="5" ry="2.5" fill={WHITE} />
-        <ellipse cx="33" cy="47" rx="5" ry="2.5" fill={WHITE} />
+export function CatBasket() {
+  return (
+    <button
+      suppressHydrationWarning
+      type="button"
+      aria-label="These are my six cats"
+      className="cat-basket group relative block w-[200px] cursor-default rounded-2xl border-none bg-transparent p-0"
+    >
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 translate-y-1 rounded-full bg-foreground px-3.5 py-1.5 text-[13px] font-semibold whitespace-nowrap text-background opacity-0 transition-[opacity,translate] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+      >
+        These are my six cats
+        <span className="absolute top-full left-1/2 -ml-1.5 size-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-foreground" />
+      </span>
+      <svg viewBox="0 16 220 144" aria-hidden="true" className="block w-full">
+        <defs>
+          <clipPath id="basket-front">
+            <path d="M14 78 L206 78 L188 146 Q186 154 177 154 L43 154 Q34 154 32 146 Z" />
+          </clipPath>
+        </defs>
+        {/* Handle, behind the cats */}
+        <path d="M28 76 Q110 -24 192 76" stroke="var(--basket-rim)" strokeWidth="7" fill="none" strokeLinecap="round" />
+
+        {CATS.map((cat, i) => (
+          <g key={cat.x} className="cat-head" style={{ animationDelay: `${i * 70}ms` }}>
+            <g transform={`rotate(${cat.tilt} ${cat.x} ${cat.y})`}>
+              <polygon points={`${cat.x - 13},${cat.y - 6} ${cat.x - 11},${cat.y - 22} ${cat.x - 2},${cat.y - 13}`} fill={INK} stroke="var(--tux-outline)" strokeWidth="1.2" strokeLinejoin="round" />
+              <polygon points={`${cat.x + 13},${cat.y - 6} ${cat.x + 11},${cat.y - 22} ${cat.x + 2},${cat.y - 13}`} fill={INK} stroke="var(--tux-outline)" strokeWidth="1.2" strokeLinejoin="round" />
+              <circle cx={cat.x} cy={cat.y} r="15" fill={INK} stroke="var(--tux-outline)" strokeWidth="1.2" />
+              <path
+                d={`M${cat.x} ${cat.y - 14} C${cat.x - 3} ${cat.y - 6} ${cat.x - 4} ${cat.y + 2} ${cat.x} ${cat.y + 4} C${cat.x + 4} ${cat.y + 2} ${cat.x + 3} ${cat.y - 6} ${cat.x} ${cat.y - 14} Z`}
+                fill={WHITE}
+              />
+              <ellipse cx={cat.x} cy={cat.y + 6} rx="7" ry="5" fill={WHITE} />
+              <path d={`M${cat.x - 1.4} ${cat.y + 3.5} L${cat.x + 1.4} ${cat.y + 3.5} L${cat.x} ${cat.y + 5.2} Z`} fill={NOSE} />
+              <Eyes cat={cat} />
+            </g>
+          </g>
+        ))}
+
+        {/* Basket front, woven */}
+        <path d="M14 78 L206 78 L188 146 Q186 154 177 154 L43 154 Q34 154 32 146 Z" fill="var(--basket)" />
+        <g clipPath="url(#basket-front)" stroke="var(--basket-dark)" strokeWidth="2.2" strokeLinecap="round" opacity="0.55">
+          {[94, 110, 126, 142].map((y) => (
+            <path key={y} d={`M10 ${y} Q110 ${y + 5} 210 ${y}`} fill="none" />
+          ))}
+          {Array.from({ length: 13 }, (_, i) => 22 + i * 15).map((x, i) => (
+            <path key={x} d={`M${x} ${80 + (i % 2) * 8} L${x + (x - 110) * -0.08} 156`} fill="none" />
+          ))}
+        </g>
+        <rect x="8" y="70" width="204" height="14" rx="7" fill="var(--basket-rim)" />
+        {/* Paws over the rim */}
+        <ellipse cx="58" cy="72" rx="5" ry="3" fill={WHITE} />
+        <ellipse cx="68" cy="73" rx="5" ry="3" fill={WHITE} />
+        <ellipse cx="148" cy="72" rx="5" ry="3" fill={WHITE} />
+        {/* A tail hanging over the side */}
+        <path d="M204 84 C218 92 214 112 204 118" stroke={INK} strokeWidth="6" fill="none" strokeLinecap="round" />
       </svg>
-    )
-  }
-  if (pose === "stretch") {
+    </button>
+  )
+}
+
+function Eyes({ cat }: { cat: CatHead }) {
+  const l = cat.x - 5.5
+  const r = cat.x + 5.5
+  const y = cat.y - 2
+  if (cat.face === "sleepy") {
     return (
-      <svg viewBox="0 0 90 40" className="block w-full">
-        <path d="M76 27 C88 22 88 8 82 4" stroke={INK} strokeWidth="5" strokeLinecap="round" fill="none" />
-        <ellipse cx="50" cy="28" rx="29" ry="9.5" fill={INK} className="tux-ink" />
-        <polygon points="8,14 9,2 16,9" fill={INK} />
-        <polygon points="25,13 24,2 18,8" fill={INK} />
-        <circle cx="16" cy="21" r="10" fill={INK} className="tux-ink" />
-        <ellipse cx="16" cy="25.5" rx="5" ry="3.5" fill={WHITE} />
-        <path d="M15 24 L17 24 L16 25.4 Z" fill={NOSE} />
-        <circle cx="12" cy="19" r="1.8" fill={EYE} />
-        <circle cx="20" cy="19" r="1.8" fill={EYE} />
-        <path d="M26 33 C32 30 40 30 44 33 L42 36 C36 34 30 34 26 36 Z" fill={WHITE} />
-        <ellipse cx="4" cy="35" rx="5" ry="2.4" fill={WHITE} />
-        <ellipse cx="12" cy="36.5" rx="5" ry="2.4" fill={WHITE} />
-        <ellipse cx="70" cy="36.5" rx="4.5" ry="2.4" fill={WHITE} />
-      </svg>
+      <path d={`M${l - 2.5} ${y} Q${l} ${y + 2.5} ${l + 2.5} ${y} M${r - 2.5} ${y} Q${r} ${y + 2.5} ${r + 2.5} ${y}`} stroke={WHITE} strokeWidth="1.4" fill="none" strokeLinecap="round" />
     )
   }
   return (
-    <svg viewBox="0 0 60 70" className="block w-full">
-      <path d="M42 64 C56 62 58 48 51 41" stroke={INK} strokeWidth="5" strokeLinecap="round" fill="none" />
-      <ellipse cx="30" cy="50" rx="16" ry="18" fill={INK} className="tux-ink" />
-      <polygon points="18,19 19,5 27,13" fill={INK} />
-      <polygon points="42,19 41,5 33,13" fill={INK} />
-      <circle cx="30" cy="24" r="13" fill={INK} className="tux-ink" />
-      <path d="M30 35 C23 41 23 55 30 61 C37 55 37 41 30 35 Z" fill={WHITE} />
-      <ellipse cx="30" cy="29.5" rx="6" ry="4.5" fill={WHITE} />
-      <path d="M29 27.5 L31 27.5 L30 29 Z" fill={NOSE} />
-      <ellipse cx="25" cy="22.5" rx="2.2" ry="2.4" fill={EYE} />
-      <ellipse cx="35" cy="22.5" rx="2.2" ry="2.4" fill={EYE} />
-      <ellipse cx="25" cy="22.5" rx="0.8" ry="1.9" fill={INK} />
-      <ellipse cx="35" cy="22.5" rx="0.8" ry="1.9" fill={INK} />
-      <ellipse cx="24" cy="67" rx="4.5" ry="2.6" fill={WHITE} />
-      <ellipse cx="36" cy="67" rx="4.5" ry="2.6" fill={WHITE} />
-    </svg>
+    <>
+      <ellipse cx={l} cy={y} rx="2.4" ry="2.6" fill={EYE} />
+      <ellipse cx={l} cy={y} rx="0.9" ry="2" fill={INK} />
+      {cat.face === "wink" ? (
+        <path d={`M${r - 2.5} ${y} Q${r} ${y + 2.5} ${r + 2.5} ${y}`} stroke={WHITE} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+      ) : (
+        <>
+          <ellipse cx={r} cy={y} rx="2.4" ry="2.6" fill={EYE} />
+          <ellipse cx={r} cy={y} rx="0.9" ry="2" fill={INK} />
+        </>
+      )}
+    </>
   )
 }

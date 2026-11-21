@@ -92,6 +92,10 @@
     --grain-opacity: 0.13;
     --tux-ink: #17171a;
     --tux-white: #fbfaf7;
+    --tux-outline: transparent;
+    --basket: #c08a52;
+    --basket-rim: #a8733f;
+    --basket-dark: #7a4e26;
     --grain-blend: multiply;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
@@ -143,6 +147,10 @@
     /* Tuxedo cats stay readable on the near-black ground. */
     --tux-ink: #353b37;
     --tux-white: #f3ecef;
+    --tux-outline: #8c958f;
+    --basket: #a87442;
+    --basket-rim: #8f6034;
+    --basket-dark: #5c3a1a;
     --grain-blend: screen;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
@@ -575,21 +583,42 @@ html:not([data-intro="play"]) .site-nav > * {
   }
 }
 
-/* ---------- Footer cats (src/components/site/tuxedo-cats.tsx) ---------- */
+/* ---------- Footer: cat basket and the dedication (site-footer.tsx, tuxedo-cats.tsx) ---------- */
 
-.tux-cat svg {
+.cat-head {
+  transform-box: fill-box;
   transform-origin: 50% 100%;
 }
-.tux-cat:hover svg {
-  animation: tux-wiggle 700ms ease-in-out;
+.cat-basket:hover .cat-head,
+.cat-basket:focus-visible .cat-head {
+  animation: cat-bob 900ms ease-in-out;
 }
-@keyframes tux-wiggle {
-  0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(-6deg) translateY(-2px); }
-  60% { transform: rotate(5deg); }
+@keyframes cat-bob {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-5px) rotate(-3deg); }
+  65% { transform: translateY(-2px) rotate(2deg); }
+}
+
+/* A light sweep across "Chuaya ♥ Adi" on hover. */
+.shine {
+  background-image: linear-gradient(110deg, var(--muted-foreground) 38%, var(--primary) 50%, var(--muted-foreground) 62%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: background-position 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .shine,
+.group:focus-visible .shine {
+  background-position: 0 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .tux-cat:hover svg {
+  .cat-basket:hover .cat-head,
+  .cat-basket:focus-visible .cat-head {
     animation: none;
+  }
+  .shine {
+    transition: none;
   }
 }

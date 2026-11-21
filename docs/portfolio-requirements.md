@@ -181,7 +181,7 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 
 **Contents:**
 - Status badge (green): **[ADRIAN] confirm wording**, for example "Open to internships".
-- The name as the page `<h1>`: "FRANCIS" drawn as a small connected graph (nodes along the letter outlines plus a few inside, each linked to its nearest neighbours: ink nodes, green edges), "ADRIAN" solid pink, set behind the cutout.
+- The name as the page `<h1>`: "FRANCIS" as a dot matrix (the letters filled with an even, staggered grid of brand-green dots, same typeface and weight as ADRIAN), "ADRIAN" solid pink, set behind the cutout.
 - The Adrian cutout in front of the name (stacking: background, name, cutout, then text and nav).
 - Greeting line: **[ADRIAN] Cebuano or Waray greeting**.
 - Tagline: "Algorithms, urban farms, and student institutions, built with the same care."
@@ -229,6 +229,8 @@ Use CSS scroll-driven animations (`animation-timeline: scroll()`) where the brow
 Between Who I am and Experiences, a pinned scene shows **EXPERIENCES**: it pops up as you scroll in, holds, then grows outward and fades, revealing the Experiences side scroll. At the end of Experiences the section blurs and fades out, and a second scene brings **SELECTED WORK** into focus out of a blur, then grows outward the same way. Reduced motion: still words, no pin.
 
 ### 4.4 Experiences (side scroll)
+
+- A **Certifications** button sits in the header beside the intro line. Certifications are not ready yet: clicking it swaps the label to "Soon" for about 2 seconds (screen readers hear "Certifications: coming soon").
 
 **Transition in:** the section pins. Vertical scroll progress maps to a horizontal translate of the card track. The giant blurred word "EXPERIENCES" sits behind the cards and drifts at about 0.3 times the track speed.
 
@@ -281,7 +283,7 @@ Same layout, data shape and behavior as Experiences, for consistency. Data in `c
 No categories (they repeat Experiences and Selected work). This section highlights skills, talents, and affiliations, building up to Contact.
 
 - Heading: "What I bring to the room".
-- Three endless rows: **Tools** (logos), **Leadership and talents** (Legislation, Parliamentary procedure, Project creation, Spearheading, Grant proposal creation, Public speaking, Student-scholar-leader), **Affiliations** (logos and names).
+- Three endless rows: **Tools** (logos), **Skills** in two smaller rows drifting in opposite directions (Scholar-student-leader, Constitutional Drafting, Grant Acquisition, Policy & Legislation, Program Direction, Agri-Tech Outreach, Electoral Governance, Social Innovation, Parliamentary Governance, Stakeholder Partnerships, Institutional Advocacy, Community Mobilization, Legal & Procedural Oversight, SDG Implementation), **Affiliations** (logos and names).
 - Items rest in a quiet gray. A couple at a time light up at random in their color (brand colors for logos, pink or green for words).
 - Hover: the item bumps up and takes its color; it returns when the mouse leaves.
 - The rows drift on their own. Drag them (mouse or touch) or use the arrow keys; on release they carry on. Hover or focus pauses a row. Reduced motion: no drift, still draggable.
@@ -310,7 +312,7 @@ No categories (they repeat Experiences and Selected work). This section highligh
 
 ### 4.8b Footer
 
-A small band on the page background, after Contact: "Adrian", the quote ("Festina lente"), social icons with a small "Chuaya ♥ Adi" beside them; columns Explore and Elsewhere (no "Get in touch": Contact is right above). Bottom line: "© 2026 AdiFranDev. All rights reserved." and "Adirawr, dinarawrawr, thanks for visiting mwa <3". Six tuxedo cats (original drawings: sitting, loaf, stretching) are placed at random on every visit: two perched on the footer's top line, four along the bottom, each with a random pose, size, tilt, and facing; they wiggle on hover.
+A small band on the page background, after Contact: "Adrian", the quote ("Festina lente"), the social icons, and under them a small "Chuaya ♥ Adi" that shines on hover (a pink sweep across the names; the heart grows and glows). Columns: Explore and Elsewhere. On the right, a woven basket with six tuxedo cats peeking over the rim (original drawing); on hover or focus they bob and a bubble says "These are my six cats". Bottom line: "© 2026 AdiFranDev. All rights reserved." and "Adirawr, dinarawrawr, thanks for visiting mwa <3".
 
 ### 4.9 Sticky nav
 

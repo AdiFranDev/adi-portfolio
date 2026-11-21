@@ -18,6 +18,7 @@ export function Traits({ traits }: TraitsProps) {
           <div key={t.name} className="border-b border-border">
             <h3 className="m-0">
               <button
+                suppressHydrationWarning
                 type="button"
                 aria-expanded={on}
                 aria-controls={panelId}

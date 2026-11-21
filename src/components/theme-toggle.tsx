@@ -65,6 +65,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
 
   return (
     <button
+      suppressHydrationWarning
       type="button"
       onClick={onClick}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}

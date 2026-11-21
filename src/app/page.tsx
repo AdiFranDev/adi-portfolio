@@ -3,7 +3,7 @@ import path from "node:path"
 import { about, hero, intro } from "@content/site"
 import { CATEGORY_MAX, experiences, highlightOrder, moreLinks, projects, waves } from "@content/work"
 import { moments } from "@content/moments"
-import { affiliations, leadership, tools } from "@content/skills"
+import { affiliations, skills, tools } from "@content/skills"
 import { resolvePhoto } from "@/lib/photos"
 import { Intro } from "@/components/site/intro"
 import { Hero } from "@/components/site/hero"
@@ -43,6 +43,7 @@ export default function Page() {
             blurredWord="EXPERIENCES"
             itemLabel="experience"
             exitBlur
+            soon="Certifications"
             cards={experiences.map((c) => ({ ...c, photo: resolvePhoto(c.photo) }))}
           />
           <WordScene word="SELECTED WORK" section="projects" entry="blur" />
@@ -61,7 +62,7 @@ export default function Page() {
             moments={moments.map((m) => ({ ...m, photo: resolvePhoto(m.photo) }))}
           />
           <Skills
-            leadership={leadership}
+            skills={skills}
             tools={tools.map((t) => ({ ...t, logo: t.logo && publicFile(t.logo) ? t.logo : null }))}
             affiliations={affiliations.map((o) => ({ ...o, logo: publicFile(o.logo) ? o.logo : null }))}
           />

@@ -109,6 +109,7 @@ function DesktopNav({ activeNav, section }: DesktopNavProps) {
       })}
       <Menu.Root>
         <Menu.Trigger
+          suppressHydrationWarning
           aria-label="More sections"
           className="flex size-11 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-foreground transition-colors duration-150 hover:bg-muted data-[popup-open]:bg-muted"
         >
@@ -161,7 +162,7 @@ function PhoneNav({ section }: PhoneNavProps) {
       <span className="flex gap-1.5">
         <ThemeToggle />
         <Dialog.Root open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger className="flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-none bg-foreground px-4 text-sm font-semibold text-background transition-transform duration-150 active:scale-[0.97]">
+          <Dialog.Trigger suppressHydrationWarning className="flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-none bg-foreground px-4 text-sm font-semibold text-background transition-transform duration-150 active:scale-[0.97]">
             <MenuIcon aria-hidden="true" className="size-[18px]" />
             {current}
           </Dialog.Trigger>

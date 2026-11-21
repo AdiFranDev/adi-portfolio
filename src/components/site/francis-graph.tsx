@@ -5,9 +5,9 @@ import { useEffect, useRef } from "react"
 type FrancisGraphProps = { text: string }
 
 /**
- * Draws the word as a small connected graph: nodes along the letter outlines,
- * a few inside, each linked to its nearest neighbours. The real text stays in
- * place (invisible) so the layout and size match the type exactly.
+ * Draws the word as a dot matrix: the letters, filled with an even grid of
+ * brand-green dots. The real text stays in place (invisible) so the layout and
+ * size match the type exactly.
  */
 export function FrancisGraph({ text }: FrancisGraphProps) {
   const textRef = useRef<HTMLSpanElement>(null)
@@ -52,76 +52,22 @@ export function FrancisGraph({ text }: FrancisGraphProps) {
       const inside = (x: number, y: number) =>
         x >= 0 && y >= 0 && x < w && y < h && (data[(y * w + x) * 4 + 3] ?? 0) > 128
 
-      // 2. Pick nodes: outline pixels first, then a sparse interior, kept apart by `gap`.
-      const gap = Math.max(4, size * 0.05)
-      const nodes: { x: number; y: number }[] = []
-      const cell = gap
-      const grid = new Map<string, { x: number; y: number }[]>()
-      const near = (x: number, y: number, r: number) => {
-        const cx = Math.floor(x / cell)
-        const cy = Math.floor(y / cell)
-        const out: { x: number; y: number }[] = []
-        const reach = Math.ceil(r / cell)
-        for (let gx = cx - reach; gx <= cx + reach; gx++) {
-          for (let gy = cy - reach; gy <= cy + reach; gy++) {
-            for (const n of grid.get(`${gx},${gy}`) ?? []) {
-              if ((n.x - x) ** 2 + (n.y - y) ** 2 < r * r) out.push(n)
-            }
-          }
-        }
-        return out
-      }
-      const add = (x: number, y: number) => {
-        if (near(x, y, gap).length > 0) return
-        const n = { x, y }
-        nodes.push(n)
-        const key = `${Math.floor(x / cell)},${Math.floor(y / cell)}`
-        grid.set(key, [...(grid.get(key) ?? []), n])
-      }
-      const step = 2
-      for (let y = 0; y < h; y += step) {
-        for (let x = 0; x < w; x += step) {
-          if (!inside(x, y)) continue
-          const edge = !inside(x - step, y) || !inside(x + step, y) || !inside(x, y - step) || !inside(x, y + step)
-          if (edge) add(x, y)
-        }
-      }
-      const inner = gap * 2.4
-      for (let y = inner / 2; y < h; y += inner) {
-        for (let x = inner / 2; x < w; x += inner) {
-          const px = Math.round(x)
-          const py = Math.round(y)
-          if (inside(px, py) && near(px, py, gap * 1.3).length === 0) add(px, py)
-        }
-      }
-
-      // 3. Link each node to its nearest neighbours.
+      // 2. Fill the letters with an even, staggered grid of dots, so the word
+      // keeps the same solid weight as the name under it.
+      const pitch = Math.max(4, size * 0.058)
+      const r = pitch * 0.34
       const root = getComputedStyle(document.documentElement)
-      const ink = root.getPropertyValue("--foreground").trim() || "#24161c"
-      const green = root.getPropertyValue("--brand-green").trim() || "#1a763f"
-      ctx.strokeStyle = green
-      ctx.globalAlpha = 0.7
-      ctx.lineWidth = Math.max(0.8, size * 0.007)
+      ctx.fillStyle = root.getPropertyValue("--brand-green").trim() || "#0e492a"
       ctx.beginPath()
-      for (const n of nodes) {
-        const close = near(n.x, n.y, gap * 1.9)
-          .filter((p) => p !== n)
-          .sort((a, b) => (a.x - n.x) ** 2 + (a.y - n.y) ** 2 - ((b.x - n.x) ** 2 + (b.y - n.y) ** 2))
-          .slice(0, 3)
-        for (const p of close) {
-          ctx.moveTo(n.x, n.y)
-          ctx.lineTo(p.x, p.y)
+      for (let row = 0, y = pitch / 2; y < h; row++, y += pitch * 0.866) {
+        const shift = row % 2 === 0 ? 0 : pitch / 2
+        for (let x = pitch / 2 + shift; x < w; x += pitch) {
+          if (!inside(Math.round(x), Math.round(y))) continue
+          ctx.moveTo(x + r, y)
+          ctx.arc(x, y, r, 0, Math.PI * 2)
         }
       }
-      ctx.stroke()
-      ctx.globalAlpha = 1
-      ctx.fillStyle = ink
-      const r = Math.max(1.2, size * 0.011)
-      for (const n of nodes) {
-        ctx.beginPath()
-        ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fill()
-      }
+      ctx.fill()
     }
 
     document.fonts.ready.then(render).catch((error: unknown) => console.error("FRANCIS graph: fonts did not load", error))

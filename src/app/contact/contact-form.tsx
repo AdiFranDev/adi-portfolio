@@ -23,6 +23,7 @@ export function ContactForm() {
     >
       <Field id="name" label="Name" error={err("name")}>
         <input
+          suppressHydrationWarning
           id="name"
           name="name"
           type="text"
@@ -35,6 +36,7 @@ export function ContactForm() {
       </Field>
       <Field id="email" label="Email" error={err("email")}>
         <input
+          suppressHydrationWarning
           id="email"
           name="email"
           type="email"
@@ -47,6 +49,7 @@ export function ContactForm() {
       </Field>
       <Field id="message" label="Message" error={err("message")}>
         <textarea
+          suppressHydrationWarning
           id="message"
           name="message"
           rows={5}
@@ -56,8 +59,9 @@ export function ContactForm() {
           className={cn(fieldClass, "min-h-[110px] resize-y py-3")}
         />
       </Field>
-      <input type="text" name="hp_field" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+      <input suppressHydrationWarning type="text" name="hp_field" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       <button
+        suppressHydrationWarning
         type="submit"
         disabled={pending}
         className={cn(buttonStyles({ variant: "primary", size: "lg" }), "w-full disabled:cursor-wait disabled:opacity-80")}

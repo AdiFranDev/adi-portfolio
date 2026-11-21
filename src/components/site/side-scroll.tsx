@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowUpRight, ChevronLeft, ChevronRight, Link2 } from "lucide-react"
+import { ArrowUpRight, BadgeCheck, ChevronLeft, ChevronRight, Link2 } from "lucide-react"
 import type { Photo } from "@/lib/photos"
 import type { Category, Tone, Wave } from "@content/work"
 import { PhotoSlot } from "@/components/site/photo-slot"
@@ -38,6 +38,8 @@ type SideScrollProps = {
   moreLinks?: Record<Category, { label: string; href: string | null }>
   // Blur and fade the section out over an extra stretch of scroll after the last card.
   exitBlur?: boolean
+  // A button for something not built yet; clicking it says "Soon".
+  soon?: string
 }
 
 const pad = (n: number) => String(n).padStart(2, "0")
@@ -59,6 +61,7 @@ export function SideScroll({
   max = 5,
   moreLinks,
   exitBlur = false,
+  soon,
 }: SideScrollProps) {
   const outerRef = useRef<HTMLElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -224,7 +227,12 @@ export function SideScroll({
               </h2>
               {intro && <p className="m-0 mt-1.5 text-[15px] text-muted-foreground md:hidden">{intro}</p>}
             </div>
-            {intro && <div className="hidden text-[15px] text-muted-foreground md:block">{intro}</div>}
+            {(intro || soon) && (
+              <div className="flex items-center gap-5">
+                {intro && <div className="hidden text-[15px] text-muted-foreground md:block">{intro}</div>}
+                {soon && <SoonButton label={soon} />}
+              </div>
+            )}
             {waves && (
               <ol aria-label="Categories" className="m-0 -mx-5 flex list-none gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-end md:overflow-visible md:px-0 md:pb-0">
                 {waves.map((w) => {
@@ -232,6 +240,7 @@ export function SideScroll({
                   return (
                     <li key={w.id} className="shrink-0">
                       <button
+                        suppressHydrationWarning
                         type="button"
                         aria-pressed={on}
                         aria-controls={`${id}-cards`}
@@ -284,6 +293,7 @@ export function SideScroll({
               {counter}
             </span>
             <button
+              suppressHydrationWarning
               type="button"
               aria-label={`Previous ${itemLabel}`}
               onClick={() => goTo(active - 1)}
@@ -293,6 +303,7 @@ export function SideScroll({
               <ChevronLeft aria-hidden="true" />
             </button>
             <button
+              suppressHydrationWarning
               type="button"
               aria-label={`Next ${itemLabel}`}
               onClick={() => goTo(active + 1)}
@@ -305,6 +316,39 @@ export function SideScroll({
         </div>
       </div>
     </section>
+  )
+}
+
+const SOON_MS = 2200
+
+function SoonButton({ label }: { label: string }) {
+  const [said, setSaid] = useState(false)
+
+  useEffect(() => {
+    if (!said) return
+    const timer = window.setTimeout(() => setSaid(false), SOON_MS)
+    return () => window.clearTimeout(timer)
+  }, [said])
+
+  return (
+    <button
+      suppressHydrationWarning
+      type="button"
+      onClick={() => setSaid(true)}
+      className={cn(buttonStyles({ variant: "secondary" }), "w-fit")}
+    >
+      <BadgeCheck aria-hidden="true" />
+      {/* Both labels share one grid cell, so the button keeps its width when the text swaps. */}
+      <span className="grid">
+        <span className={cn("col-start-1 row-start-1 transition-[opacity,translate] duration-200 motion-reduce:transition-none", said && "-translate-y-1 opacity-0")}>
+          {label}
+        </span>
+        <span aria-hidden={!said} className={cn("col-start-1 row-start-1 text-center text-brand-green transition-[opacity,translate] duration-200 motion-reduce:transition-none", !said && "translate-y-1 opacity-0")}>
+          Soon
+        </span>
+      </span>
+      <span role="status" className="sr-only">{said ? `${label}: coming soon` : ""}</span>
+    </button>
   )
 }
 
