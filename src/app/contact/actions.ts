@@ -50,16 +50,18 @@ export async function sendContact(
     return { ok: false, message: "Please check the highlighted fields.", fieldErrors }
   }
 
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
-  if (rateLimited(ip)) {
-    return { ok: false, message: "Too many messages from this connection. Please try again in an hour." }
-  }
-
+  // Check the setup before counting the attempt, so a missing setting
+  // doesn't use up a visitor's (or Adrian's) five tries.
   const apiKey = process.env.RESEND_API_KEY
   const to = process.env.CONTACT_TO_EMAIL
   if (!apiKey || !to) {
     console.error("Contact form: RESEND_API_KEY or CONTACT_TO_EMAIL is not set")
     return { ok: false, message: "The message could not be sent. Please try again later." }
+  }
+
+  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
+  if (rateLimited(ip)) {
+    return { ok: false, message: "Too many messages from this connection. Please try again in an hour." }
   }
 
   const resend = new Resend(apiKey)
@@ -72,7 +74,8 @@ export async function sendContact(
   })
 
   if (error) {
-    console.error("Contact form: Resend returned an error", error.name)
+    // name and message say what Resend rejected (for example an unverified recipient); no secrets.
+    console.error("Contact form: Resend returned an error", error.name, error.message)
     return { ok: false, message: "The message could not be sent. Please try again later." }
   }
   return { ok: true, message: "Thanks, message sent." }

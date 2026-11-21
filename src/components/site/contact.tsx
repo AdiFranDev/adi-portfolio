@@ -3,6 +3,7 @@ import { contact } from "@content/site"
 import { ContactForm } from "@/app/contact/contact-form"
 import { Reveal } from "@/components/site/reveal"
 import { Traits } from "@/components/site/traits"
+import { cn } from "@/lib/utils"
 
 export function Contact() {
   return (
@@ -22,16 +23,27 @@ export function Contact() {
           <Reveal delay={80} className="flex flex-col gap-5 md:col-start-2 md:row-span-2 md:row-start-1 md:mt-[30px]">
             <ContactForm />
             <ul className="m-0 grid list-none grid-cols-1 gap-0 p-0 md:grid-cols-2 md:gap-3">
-              {contact.links.map((link) => (
-                <li key={link.name} className="border-b border-border md:border-none">
+              {contact.links.map((link, i) => (
+                // The first link (LinkedIn) spans both columns so the other six pair up evenly.
+                <li key={link.name} className={cn("border-b border-border md:border-none", i === 0 && "md:col-span-2")}>
                   {link.href ? (
                     <a
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex min-h-12 items-center gap-2.5 text-foreground no-underline transition-[background-color,border-color] duration-150 md:min-h-[52px] md:rounded-xl md:border md:border-input md:px-3.5 md:hover:border-foreground md:hover:bg-muted"
+                      className="group flex min-h-12 items-center gap-2.5 text-foreground no-underline transition-[background-color,border-color] duration-150 md:min-h-[52px] md:rounded-xl md:border md:border-input md:px-3.5 md:hover:border-foreground md:hover:bg-muted"
                     >
-                      <Link2 aria-hidden="true" className="size-5 text-muted-foreground" />
+                      <span
+                        aria-hidden="true"
+                        className="size-5 shrink-0 bg-muted-foreground transition-colors duration-150 group-hover:bg-(--brand) group-focus-visible:bg-(--brand)"
+                        style={
+                          {
+                            "--brand": link.color,
+                            mask: `url(${link.icon}) center / contain no-repeat`,
+                            WebkitMask: `url(${link.icon}) center / contain no-repeat`,
+                          } as React.CSSProperties
+                        }
+                      />
                       <span className="flex flex-col">
                         <span className="text-sm font-semibold">{link.name}</span>
                         <span className="text-[13px] text-muted-foreground">{link.handle}</span>

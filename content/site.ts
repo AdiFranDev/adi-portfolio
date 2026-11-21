@@ -8,14 +8,15 @@ import type { PhotoSpec } from "@/lib/photos"
  */
 export const profiles = {
   github: "https://github.com/AdiFranDev" as string | null,
-  scholar: null as string | null, // Google Scholar
-  facebook: null as string | null,
-  linkedin: null as string | null,
-  instagram: null as string | null,
+  scholar: "https://scholar.google.com/citations?user=K1DRLkMAAAAJ&hl=en" as string | null, // Google Scholar
+  facebook: "https://www.facebook.com/adriannotsobig" as string | null,
+  linkedin: "https://www.linkedin.com/in/esteban-francis-adrian-g-9304a4311/" as string | null,
+  instagram: "https://www.instagram.com/adriannotsosmol_/" as string | null,
+  orcid: "https://orcid.org/0009-0009-7751-330X" as string | null,
+  researchgate: "https://www.researchgate.net/profile/Francis-Adrian-Esteban" as string | null,
 }
 
 export const hero = {
-  status: "[STATUS: open to opportunities, confirm wording]",
   // One greeting per language Adrian speaks; the hero cycles through them.
   greetings: [
     { lang: "en", text: "Hello, I'm Adrian!" },
@@ -129,7 +130,6 @@ export const hero = {
     },
   },
 } satisfies {
-  status: string
   greetings: { lang: string; text: string }[]
   tagline: string
   topics: { id: string; label: string; n: string; note?: string; tone?: "green"; late?: boolean }[]
@@ -230,28 +230,34 @@ export const streak = {
 
 export const contact = {
   traits: [
-    { name: "Systematic", text: "I build structure first: process designs, SOPs, bylaws, and code that others can maintain." },
-    { name: "Grounded", text: "My work starts from real places: barangay road networks, greenhouses, and student organizations." },
-    { name: "Community-built", text: "Most of my projects are team efforts with partners, and I credit them." },
-    { name: "Curious across fields", text: "Graph algorithms, bioinformatics, IoT, and agriculture: I move between them on purpose." },
+    { name: "Empathy", text: "I start from the people a thing is for: families on an evacuation route, farmers on a phone, scholars who need a mentor." },
+    { name: "Initiative", text: "I start what is not there yet: AgriVANture, the first CS³ Congress, FarmBox ERP before anyone asked for it." },
+    { name: "Action", text: "Plans count once they leave the page: trainings across barangays, sensors in working greenhouses, bylaws in use." },
   ],
   // href: null means the link is not confirmed yet; it renders as a highlighted slot.
+  // color: the logo turns this brand colour on hover.
   links: [
-    { name: "LinkedIn", handle: "Let us connect", href: profiles.linkedin },
-    { name: "GitHub", handle: "@AdiFranDev", href: profiles.github },
-    { name: "Facebook", handle: "[confirm public]", href: profiles.facebook },
-    { name: "Instagram", handle: "[confirm public]", href: profiles.instagram },
-  ] satisfies { name: string; handle: string; href: string | null }[],
+    { name: "LinkedIn", handle: "Let us connect", href: profiles.linkedin, icon: "/logos/social/linkedin.svg", color: "#0A66C2" },
+    { name: "GitHub", handle: "@AdiFranDev", href: profiles.github, icon: "/logos/social/github.svg", color: "var(--foreground)" },
+    { name: "Google Scholar", handle: "Francis Adrian Esteban", href: profiles.scholar, icon: "/logos/social/googlescholar.png", color: "#4285F4" },
+    { name: "ORCID", handle: "0009-0009-7751-330X", href: profiles.orcid, icon: "/logos/social/orcid.png", color: "#A6CE39" },
+    { name: "ResearchGate", handle: "Francis Adrian Esteban", href: profiles.researchgate, icon: "/logos/social/researchgate.png", color: "#00CCBB" },
+    { name: "Facebook", handle: "adriannotsobig", href: profiles.facebook, icon: "/logos/social/facebook.svg", color: "#0866FF" },
+    { name: "Instagram", handle: "@adriannotsosmol_", href: profiles.instagram, icon: "/logos/social/instagram.svg", color: "#E4405F" },
+  ] satisfies { name: string; handle: string; href: string | null; icon: string; color: string }[],
 }
 
 // Footer (spec 4.12).
 export const footer = {
   // Short quotes or mottos. Add as many as you like; each shows on its own line.
-  quotes: ["Festina lente"],
-  // icon: a file in /public/logos/social. null = no logo yet (LinkedIn is not in Simple Icons).
+  quotes: ["Memento Mori - For a Stoic, mindful life.", "The best way to predict the future is to create it. - Abraham Lincoln"],
+  // icon: a file in /public/logos/social. null = no logo yet.
   socials: [
     { name: "GitHub", href: profiles.github, icon: "/logos/social/github.svg" },
-    { name: "LinkedIn", href: profiles.linkedin, icon: null },
+    { name: "Google Scholar", href: profiles.scholar, icon: "/logos/social/googlescholar.png" },
+    { name: "ORCID", href: profiles.orcid, icon: "/logos/social/orcid.png" },
+    { name: "ResearchGate", href: profiles.researchgate, icon: "/logos/social/researchgate.png" },
+    { name: "LinkedIn", href: profiles.linkedin, icon: "/logos/social/linkedin.svg" },
     { name: "Facebook", href: profiles.facebook, icon: "/logos/social/facebook.svg" },
     { name: "Instagram", href: profiles.instagram, icon: "/logos/social/instagram.svg" },
   ] satisfies { name: string; href: string | null; icon: string | null }[],
@@ -259,7 +265,8 @@ export const footer = {
   dedication: {
     left: "Chuaya",
     right: "Adi",
+    below: "Tres Marias",
   },
   signoff: "Adirawr, dinarawrawr, thanks for visiting mwa <3",
   copyright: "© 2026 AdiFranDev. All rights reserved.",
-};
+};

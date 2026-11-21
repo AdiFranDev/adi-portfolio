@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowUpRight, BadgeCheck, ChevronLeft, ChevronRight, Link2 } from "lucide-react"
+import { ArrowUpRight, BadgeCheck, ChevronLeft, ChevronRight, Link2, Maximize2 } from "lucide-react"
 import type { Photo } from "@/lib/photos"
 import type { Category, Tone, Wave } from "@content/work"
 import { PhotoSlot } from "@/components/site/photo-slot"
+import { PhotoViewer } from "@/components/site/photo-viewer"
 import { cn } from "@/lib/utils"
 import { buttonStyles, chipStyles, iconButtonStyles, surface } from "@/components/site/ds"
 
@@ -21,6 +22,8 @@ export type SideCard = {
   photos: Photo[]
   wave?: Category
   link?: { label: string; href: string | null }
+  link2?: { label: string; href: string }
+  note?: string
 }
 
 type SideScrollProps = {
@@ -261,7 +264,7 @@ export function SideScroll({
             ref={viewportRef}
             role="region"
             aria-roledescription="carousel"
-            aria-label={title}
+            aria-label={`${title} cards`}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "ArrowRight") {
@@ -272,8 +275,10 @@ export function SideScroll({
                 goTo(active - 1)
               }
             }}
+            // No outline on the strip itself: the section clips its sides, leaving two stray
+            // lines. Keyboard focus shows as a ring on the active card instead.
             className={cn(
-              "relative min-h-0 md:flex-1 md:pt-[22px]",
+              "group/carousel relative min-h-0 outline-none md:flex-1 md:pt-[22px]",
               pinned ? "overflow-hidden" : "snap-x snap-mandatory scroll-pl-5 overflow-x-auto [scrollbar-width:none] md:scroll-pl-24",
             )}
           >
@@ -358,13 +363,17 @@ const FLIP_EVERY = 420
 /**
  * A card's photos, stacked and crossfading. The shown photo follows the page
  * scroll (one step every FLIP_EVERY px), so photos change as the cards slide by;
- * the dots, or a click on the photo, pick one directly. Reduced motion: photos
- * change only on click, without the fade.
+ * the dots pick one directly. A click on the photo, or the expand button, opens
+ * the full-size viewer. Reduced motion: photos change only on click, without the fade.
  */
 function CardGallery({ photos, label }: { photos: Photo[]; label: string }) {
   const [step, setStep] = useState(0)
   const [offset, setOffset] = useState(0)
+  const [viewing, setViewing] = useState<number | null>(null)
+  const expandRef = useRef<HTMLButtonElement>(null)
   const count = photos.length
+  // Only photos whose file exists can open full size.
+  const ready = photos.filter((p) => p.ready)
 
   useEffect(() => {
     if (count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
@@ -386,6 +395,10 @@ function CardGallery({ photos, label }: { photos: Photo[]; label: string }) {
 
   const shown = count ? (((step + offset) % count) + count) % count : 0
   const show = (i: number) => setOffset((o) => o + i - shown)
+  const view = (photo: Photo | undefined) => {
+    const i = photo ? ready.indexOf(photo) : -1
+    if (i >= 0) setViewing(i)
+  }
 
   return (
     <>
@@ -393,23 +406,40 @@ function CardGallery({ photos, label }: { photos: Photo[]; label: string }) {
         <div
           key={photo.file}
           aria-hidden={i !== shown}
-          onClick={() => count > 1 && show((shown + 1) % count)}
+          onClick={() => view(photo)}
           className={cn(
             "absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none",
-            count > 1 && "cursor-pointer",
+            photo.ready && "cursor-zoom-in",
             i === shown ? "opacity-100" : "pointer-events-none opacity-0",
           )}
         >
           <PhotoSlot
             photo={photo}
             sizes="(min-width: 768px) 460px, 300px"
-            className="size-full rounded-sm md:rounded-none"
-            imageClassName="grayscale transition-[filter] duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0"
+            // A single photo is an app screenshot: show it whole on a soft backdrop.
+            className={cn("size-full rounded-sm md:rounded-none", (count === 1 || photo.fit === "contain") && "bg-muted")}
+            imageClassName={cn(
+              "grayscale transition-[filter] duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0",
+              (count === 1 || photo.fit === "contain") && "object-contain",
+            )}
           />
         </div>
       ))}
+      {ready.length > 0 && (
+        <button
+          ref={expandRef}
+          suppressHydrationWarning
+          type="button"
+          aria-label={`View ${label} photos full size`}
+          onClick={() => view(photos[shown]?.ready ? photos[shown] : ready[0])}
+          className="absolute top-3 right-3 z-10 flex size-11 cursor-pointer items-center justify-center rounded-full bg-(--glass) text-foreground backdrop-blur-sm transition-[background-color,transform] duration-150 outline-none hover:bg-background active:scale-[0.94] focus-visible:ring-2 focus-visible:ring-ring motion-reduce:active:scale-100 md:top-4 md:right-4 [&_svg]:size-[18px]"
+        >
+          <Maximize2 aria-hidden="true" />
+        </button>
+      )}
+      <PhotoViewer photos={ready} label={label} index={viewing} onChange={setViewing} returnFocus={expandRef} />
       {count > 1 && (
-        <div className="absolute right-3 bottom-3 z-10 flex gap-1.5 rounded-full bg-(--glass) px-2 py-1.5 backdrop-blur-sm md:right-4 md:bottom-4">
+        <div className="absolute right-3 bottom-3 z-10 flex rounded-full bg-(--glass) px-1 backdrop-blur-sm md:right-4 md:bottom-4">
           {photos.map((photo, i) => (
             <button
               suppressHydrationWarning
@@ -418,11 +448,17 @@ function CardGallery({ photos, label }: { photos: Photo[]; label: string }) {
               aria-label={`${label}, photo ${i + 1} of ${count}`}
               aria-pressed={i === shown}
               onClick={() => show(i)}
-              className={cn(
-                "size-2 rounded-full transition-[background-color,width] duration-300 outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                i === shown ? "w-5 bg-foreground" : "bg-foreground/35 hover:bg-foreground/60",
-              )}
-            />
+              // 24px tap area around the 8px dot (WCAG 2.5.8).
+              className="group/dot flex h-6 min-w-6 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "h-2 rounded-full transition-[background-color,width] duration-300",
+                  i === shown ? "w-5 bg-foreground" : "w-2 bg-foreground/35 group-hover/dot:bg-foreground/60",
+                )}
+              />
+            </button>
           ))}
         </div>
       )}
@@ -439,8 +475,9 @@ function Card({ card, index, dim }: CardProps) {
       className={cn(
         surface.card,
         "group grid w-[300px] shrink-0 snap-start grid-cols-1 overflow-hidden animate-in duration-500 fade-in slide-in-from-right-6 motion-reduce:animate-none md:h-[min(590px,calc(100svh-310px))] md:min-h-[420px] md:w-[min(1060px,calc(100vw-192px))] md:grid-cols-[57%_43%] md:grid-rows-[auto_1fr]",
-        "transition-opacity duration-300",
-        dim && "opacity-75",
+        "transition-[box-shadow] duration-300",
+        // Unfocused cards fade only their photo, so text keeps full contrast.
+        !dim && "group-focus-visible/carousel:ring-2 group-focus-visible/carousel:ring-ring",
       )}
       style={{ animationDelay: `${index * 70}ms` }}
     >
@@ -448,7 +485,7 @@ function Card({ card, index, dim }: CardProps) {
         {card.kind} · <span className="text-brand-green">{card.tag}</span>
       </div>
 
-      <div className="relative mx-3 mt-3 h-[150px] overflow-hidden rounded-sm md:row-span-2 md:mx-0 md:mt-0 md:h-auto md:rounded-none">
+      <div className={cn("relative mx-3 mt-3 h-[150px] overflow-hidden rounded-sm transition-opacity duration-300 md:row-span-2 md:mx-0 md:mt-0 md:h-auto md:rounded-none", dim && "opacity-60")}>
         <CardGallery photos={card.photos} label={card.role} />
         <span className="absolute bottom-4 left-4 hidden rounded-sm bg-(--glass) px-2.5 py-1 font-mono text-[13px] tracking-[0.08em] uppercase backdrop-blur-sm md:block">
           {card.dates}
@@ -461,7 +498,25 @@ function Card({ card, index, dim }: CardProps) {
         </h3>
         <div className="text-sm font-semibold md:text-[15px] md:tracking-[0.06em] md:uppercase">{card.org}</div>
         <p className="m-0 text-sm leading-[1.5] md:mt-1.5 md:text-base md:leading-[1.6]">{card.desc}</p>
-        {card.link &&
+        {card.note && <p className="m-0 text-[13px] text-muted-foreground italic">{card.note}</p>}
+        {card.link2 && card.link?.href && (
+          <div className="flex flex-wrap gap-2">
+            {[card.link, card.link2].map((l) => (
+              <a
+                key={l.label}
+                href={l.href ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonStyles({ variant: "secondary" }), "self-start")}
+              >
+                {l.label}
+                <ArrowUpRight aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            ))}
+          </div>
+        )}
+        {card.link && !card.link2 &&
           (card.link.href ? (
             <a
               href={card.link.href}

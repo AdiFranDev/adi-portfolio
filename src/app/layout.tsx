@@ -19,10 +19,21 @@ const bricolage = Bricolage_Grotesque({
 const caveat = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-hand" })
 const notoJp = Noto_Sans_JP({ weight: ["700"], preload: false, variable: "--font-jp" })
 
+const description =
+  "Francis Adrian Esteban, Computer Science at USTP Cagayan de Oro: algorithms, urban farms, and student institutions, built with the same care."
+
 export const metadata: Metadata = {
   title: "Francis Adrian Esteban · Portfolio",
-  description:
-    "Francis Adrian Esteban, Computer Science at USTP Cagayan de Oro: algorithms, urban farms, and student institutions, built with the same care.",
+  description,
+  // The preview image is src/app/opengraph-image.jpg. No metadataBase: on Vercel, Next builds
+  // its absolute URL from VERCEL_PROJECT_PRODUCTION_URL, so it follows whatever domain is live.
+  openGraph: {
+    type: "website",
+    siteName: "Francis Adrian Esteban",
+    title: "Francis Adrian Esteban · Portfolio",
+    description,
+  },
+  twitter: { card: "summary_large_image", title: "Francis Adrian Esteban · Portfolio", description },
 }
 
 // First visit in a session: mark the page before paint so the intro overlay shows.
