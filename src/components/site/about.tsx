@@ -12,7 +12,7 @@ type AboutProps = { academic: Photo; community: Photo }
 
 export function About({ academic, community }: AboutProps) {
   return (
-    <section id="about" data-section="about" aria-labelledby="about-name" className="relative overflow-hidden">
+    <section id="about" data-section="about" aria-label="About" className="relative overflow-hidden">
 
       <Reveal className="relative mx-auto flex max-w-[1440px] flex-col gap-8 px-5 pt-28 lg:grid lg:min-h-[900px] lg:grid-cols-[minmax(0,420px)_400px_minmax(0,380px)] lg:justify-between lg:gap-6 lg:px-16 lg:pt-0 xl:px-[120px]">
         <div className="flex flex-col gap-6 lg:mt-[300px]">
