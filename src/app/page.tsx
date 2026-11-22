@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import fs from "node:fs"
 import path from "node:path"
-import { about, hero, intro } from "@content/site"
+import { about, hero, intro, profiles } from "@content/site"
 import { CATEGORY_MAX, experiences, highlightOrder, moreLinks, projects, waves } from "@content/work"
 import { moments } from "@content/moments"
 import { affiliations, skills, tools } from "@content/skills"
@@ -22,12 +22,34 @@ export const revalidate = 3600
 // One address for search engines: francisadrian.dev, not www or vercel.app.
 export const metadata: Metadata = { alternates: { canonical: "/" } }
 
+// Tells search engines who this site belongs to and which profiles are the same person.
+// Public info only: name, school, city, links.
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Francis Adrian Esteban",
+  alternateName: "Francis Adrian G. Esteban",
+  url: "https://francisadrian.dev",
+  image: "https://francisadrian.dev/opengraph-image.jpg",
+  jobTitle: "Computer Science student",
+  affiliation: {
+    "@type": "CollegeOrUniversity",
+    name: "University of Science and Technology of Southern Philippines",
+  },
+  address: { "@type": "PostalAddress", addressLocality: "Cagayan de Oro", addressCountry: "PH" },
+  sameAs: Object.values(profiles).filter((url): url is string => url !== null),
+}
+
 const publicFile = (file: string) => fs.existsSync(path.join(process.cwd(), "public", file))
 
 export default function Page() {
   const h = hero.photos
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
+      />
       <Intro cameo={resolvePhoto(intro.cameo)} />
       <main id="main">
         <Hero
