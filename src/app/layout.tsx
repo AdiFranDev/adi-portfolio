@@ -25,10 +25,12 @@ const description =
 export const metadata: Metadata = {
   title: "Francis Adrian Esteban · Portfolio",
   description,
-  // The preview image is src/app/opengraph-image.jpg. No metadataBase: on Vercel, Next builds
-  // its absolute URL from VERCEL_PROJECT_PRODUCTION_URL, so it follows whatever domain is live.
+  // The site's own domain, so the preview image (src/app/opengraph-image.jpg) and og:url
+  // resolve to francisadrian.dev instead of the vercel.app address.
+  metadataBase: new URL("https://francisadrian.dev"),
   openGraph: {
     type: "website",
+    url: "/",
     siteName: "Francis Adrian Esteban",
     title: "Francis Adrian Esteban · Portfolio",
     description,
