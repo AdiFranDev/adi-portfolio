@@ -66,7 +66,7 @@ export async function sendContact(
 
   const resend = new Resend(apiKey)
   const { error } = await resend.emails.send({
-    from: "Portfolio <onboarding@resend.dev>",
+    from: "Portfolio <contact@francisadrian.dev>",
     to: [to],
     replyTo: email,
     subject: `Portfolio message from ${name}`,

@@ -14,8 +14,9 @@ const explore = [
   ["Skills", "/#skills"],
 ] as const
 
+// 44px tall rows on phones for thumbs; normal text height from md up.
 const linkClass =
-  "text-[15px] font-medium text-foreground no-underline decoration-brand-green underline-offset-4 transition-colors duration-150 hover:text-brand-green hover:underline"
+  "inline-flex min-h-11 items-center md:inline md:min-h-0 text-[15px] font-medium text-foreground no-underline decoration-brand-green underline-offset-4 transition-colors duration-150 hover:text-brand-green hover:underline"
 const labelClass = "type-label"
 
 // A small closing band on the page background: a quote, socials, and the way back to Contact.
@@ -54,7 +55,7 @@ export function SiteFooter() {
 
           <nav aria-label="Footer" className="flex flex-col gap-3">
             <div className={labelClass}>Explore</div>
-            <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+            <ul className="m-0 flex list-none flex-col p-0 md:gap-2.5">
               {explore.map(([label, href]) => (
                 <li key={href}>
                   <Link href={href} className={linkClass}>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import fs from "node:fs"
 import path from "node:path"
 import { about, hero, intro } from "@content/site"
@@ -17,6 +18,9 @@ import { WordScene } from "@/components/site/word-scene"
 
 // Re-render hourly so the Duolingo streak and newly added photos stay current.
 export const revalidate = 3600
+
+// One address for search engines: francisadrian.dev, not www or vercel.app.
+export const metadata: Metadata = { alternates: { canonical: "/" } }
 
 const publicFile = (file: string) => fs.existsSync(path.join(process.cwd(), "public", file))
 
