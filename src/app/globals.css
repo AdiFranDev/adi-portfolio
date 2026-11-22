@@ -667,15 +667,15 @@ html:not([data-intro="play"]) .site-nav > * {
    (3:2) is drawn at least 120% of the screen height, then moved so its near tree
    line (39% down the photo) lands near the bottom of FRANCIS, without ever
    leaving a gap at the top or bottom. The front layer uses the same frame. */
-.hero-scene {
-  container-type: size;
-}
 .farm-frame {
   position: absolute;
   inset: 0;
 }
 @media (min-width: 768px) {
+  /* Size containment only where the cq units are used: on phones the scene must
+     grow to fit the role lists instead of clipping them. */
   .hero-scene {
+    container-type: size;
     --name-size: clamp(56px, min(7.4cqw, 16cqh), 132px);
     --name-top: max(92px, calc(22.2cqh - 40px));
     --hd: max(120cqh, 100cqw / 1.5);

@@ -86,7 +86,7 @@ export function Hero({ background, farm, cutout, cutoutFarm, leavesLeft, leavesR
       <div
         ref={sceneRef}
         style={{ "--p": 1 } as React.CSSProperties}
-        className="hero-scene relative h-[max(100svh,700px)] overflow-hidden md:sticky md:top-0 md:h-svh md:min-h-[640px]"
+        className="hero-scene relative min-h-[max(100svh,700px)] overflow-hidden md:sticky md:top-0 md:h-svh md:min-h-[640px]"
       >
         {/* Layer 3: background. The campus blurs and fades away into the farm under it.
             In frame 2 its bottom fades out so the scene dissolves into the page below. */}
@@ -207,7 +207,9 @@ export function Hero({ background, farm, cutout, cutoutFarm, leavesLeft, leavesR
             with Empathy below joining them. Desktop: the graph shows them, and the
             tagline stays for screen readers only. */}
         <p className="sr-only">{hero.tagline}</p>
-        <div className="absolute inset-x-0 top-[470px] bottom-0 z-[7] flex flex-col gap-3.5 rounded-t-[18px] bg-background p-5 opacity-[clamp(0,calc((var(--p)-0.6)*2.5),1)] md:hidden">
+        {/* In normal flow, so the scene grows to fit every row on short phones instead of
+            clipping them; on tall phones it still reaches the bottom of the screen. */}
+        <div className="relative z-[7] mt-[470px] flex min-h-[calc(max(100svh,700px)-470px)] flex-col gap-3.5 rounded-t-[18px] bg-background p-5 opacity-[clamp(0,calc((var(--p)-0.6)*2.5),1)] md:hidden">
           <div className="grid grid-cols-2 gap-4">
             {hero.groups.map((group) => (
               <div key={group.title} className="flex min-w-0 flex-col gap-3">
