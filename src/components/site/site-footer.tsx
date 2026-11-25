@@ -3,6 +3,7 @@ import { Heart, ImagePlus } from "lucide-react"
 import { footer } from "@content/site"
 import { iconButtonStyles } from "@/components/site/ds"
 import { CatBasket } from "@/components/site/tuxedo-cats"
+import { Ribbon } from "@/components/site/ribbon"
 import { cn } from "@/lib/utils"
 
 const explore = [
@@ -10,8 +11,8 @@ const explore = [
   ["About", "/#about"],
   ["Experiences", "/#experiences"],
   ["Selected work", "/#projects"],
-  ["Moments", "/#moments"],
   ["Skills", "/#skills"],
+  ["Moments", "/#moments"],
 ] as const
 
 // 44px tall rows on phones for thumbs; normal text height from md up.
@@ -26,7 +27,10 @@ export function SiteFooter() {
       <div className="relative mx-auto flex max-w-[1440px] flex-col gap-10 px-5 pt-14 pb-8 md:px-16 xl:px-[120px]">
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] md:gap-8">
           <div className="flex flex-col gap-4">
-            <span className="type-display text-2xl">Adrian</span>
+            <span className="flex items-center gap-2.5">
+              <Ribbon id="footer" className="size-10" />
+              <span className="type-display text-2xl">Adrian</span>
+            </span>
             {footer.quotes.map((q) => (
               <blockquote key={q} className="m-0 max-w-[36ch] text-[15px] leading-[1.55] text-muted-foreground [hanging-punctuation:first] [text-indent:-0.4em]">
                 “{q}”
@@ -43,7 +47,7 @@ export function SiteFooter() {
               <span className="shine">{footer.dedication.left}</span>
               <Heart
                 aria-hidden="true"
-                className="size-3.5 fill-primary text-primary transition-[scale,filter] duration-300 group-hover:scale-125 group-hover:drop-shadow-[0_0_6px_var(--primary)] motion-reduce:transition-none"
+                className="size-3.5 fill-accent-pink text-accent-pink transition-[scale,filter] duration-300 group-hover:scale-125 group-hover:drop-shadow-[0_0_6px_var(--accent-pink)] motion-reduce:transition-none"
               />
               <span className="sr-only">loves</span>
               <span className="shine">{footer.dedication.right}</span>

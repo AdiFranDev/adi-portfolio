@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import type { TimelineEntry } from "@content/site"
 import { cn } from "@/lib/utils"
 
@@ -91,6 +92,15 @@ export function Timeline({ title, entries, streak }: TimelineProps) {
                 {i + 1}
               </span>
               <div className="flex min-w-0 flex-col gap-1 pt-1">
+                {entry.logos && (
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {entry.logos.map((logo) => (
+                      <span key={logo.file} className="flex h-14 items-center rounded-xl border border-border bg-white p-1.5">
+                        <Image src={logo.file} alt={logo.alt} width={Math.round((logo.w * 44) / 160)} height={44} className="h-11 w-auto" />
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div className="flex items-start justify-between gap-3">
                   <span
                     lang={entry.lang}

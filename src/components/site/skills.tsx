@@ -12,18 +12,14 @@ type SkillsProps = {
   affiliations: OrgView[]
 }
 
+/** D-019: a drifting row of tool logos, two rows of skills, then a row of affiliations. */
 export function Skills({ tools, skills, affiliations }: SkillsProps) {
+  const half = Math.ceil(skills.length / 2)
   return (
-    <section
-      id="skills"
-      data-section="skills"
-      aria-labelledby="skills-title"
-      className="relative overflow-hidden pt-[84px] pb-16 md:pt-28 md:pb-24"
-    >
-      <div className="mx-auto max-w-[1440px] px-5 md:px-16 xl:px-[120px]">
-        <h2 id="skills-title" className="type-h2 optical-left m-0 max-w-[22ch]">
-          Tools I build with, skills I lead with, groups I belong to
-        </h2>
+    <section id="skills" data-section="skills" aria-labelledby="skills-title" className="scroll-mt-24 overflow-hidden py-24 md:py-28">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 md:px-8">
+        <div className="type-label text-muted-foreground">Skills</div>
+        <h2 id="skills-title" className="type-h2 m-0">Tools I build with, skills I lead with, groups I belong to</h2>
       </div>
 
       <div className="mt-10 flex flex-col gap-10 md:mt-14 md:gap-14">
@@ -65,7 +61,7 @@ export function Skills({ tools, skills, affiliations }: SkillsProps) {
         <Row label="Skills">
           {/* Two shorter rows, drifting in opposite directions, so a long list stays readable. */}
           <div className="flex flex-col gap-1 md:gap-2">
-            {[skills.slice(0, Math.ceil(skills.length / 2)), skills.slice(Math.ceil(skills.length / 2))].map((line, i) => (
+            {[skills.slice(0, half), skills.slice(half)].map((line, i) => (
               <Marquee
                 key={i}
                 label={i === 0 ? "Skills, first row" : "Skills, second row"}
@@ -74,11 +70,8 @@ export function Skills({ tools, skills, affiliations }: SkillsProps) {
                 items={line}
                 itemKey={(s) => s}
                 render={(s, lit) => (
-                  <div
-                    data-lit={lit}
-                    className="group flex shrink-0 items-center py-1.5 pr-6 md:pr-10"
-                  >
-                    <span className="inline-block font-display text-[clamp(22px,2.6vw,36px)] leading-none font-extrabold tracking-[-0.02em] whitespace-nowrap text-input transition-[color,transform] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:text-brand-green group-data-[lit=true]:text-brand-green">
+                  <div data-lit={lit} className="group flex shrink-0 items-center py-1.5 pr-6 md:pr-10">
+                    <span className="inline-block font-display text-[clamp(22px,2.6vw,36px)] leading-none font-extrabold tracking-[-0.02em] whitespace-nowrap text-input transition-[color,transform] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:text-primary group-data-[lit=true]:text-accent-pink">
                       {s}
                     </span>
                   </div>
@@ -97,7 +90,7 @@ export function Skills({ tools, skills, affiliations }: SkillsProps) {
             render={(o, lit) => (
               <div
                 data-lit={lit}
-                className="group flex h-16 shrink-0 items-center gap-3 rounded-full border border-input bg-background px-5 transition-[border-color,background-color,box-shadow] duration-300 ease-out hover:border-brand-green/60 hover:bg-[color-mix(in_oklab,var(--brand-green)_6%,var(--background))] hover:shadow-[0_2px_12px_color-mix(in_oklab,var(--brand-green)_14%,transparent)] data-[lit=true]:border-brand-green/60 data-[lit=true]:bg-[color-mix(in_oklab,var(--brand-green)_6%,var(--background))] md:h-[72px]"
+                className="group flex h-16 shrink-0 items-center gap-3 rounded-full border border-input bg-background px-5 transition-[border-color,transform] duration-300 ease-out hover:-translate-y-1 hover:border-foreground data-[lit=true]:border-foreground md:h-[72px]"
               >
                 {o.logo ? (
                   <span
@@ -129,9 +122,7 @@ export function Skills({ tools, skills, affiliations }: SkillsProps) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="type-label mx-auto w-full max-w-[1440px] px-5 md:px-16 xl:px-[120px]">
-        {label}
-      </div>
+      <div className="mx-auto w-full max-w-[1280px] px-5 font-mono text-[12.5px] tracking-[0.08em] text-accent-pink-text uppercase md:px-8">{label}</div>
       {children}
     </div>
   )

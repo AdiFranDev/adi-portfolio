@@ -1,193 +1,112 @@
 "use client"
 
-import { useEffect } from "react"
-import { intro } from "@content/site"
-import type { Photo } from "@/lib/photos"
-import { PhotoSlot } from "@/components/site/photo-slot"
+import { useEffect, useState } from "react"
+import { motion } from "motion/react"
 import { buttonStyles } from "@/components/site/ds"
 import { cn } from "@/lib/utils"
 
-// FAE graph coordinates (viewBox 0 0 242 120), from the Loader board.
-const nodes = {
-  f1: [20, 20], f2: [20, 60], f3: [20, 100], f4: [60, 20], f5: [52, 60],
-  a1: [95, 100], a2: [120, 20], a3: [145, 100], a4: [106, 64], a5: [134, 64],
-  e1: [180, 20], e2: [180, 60], e3: [180, 100], e4: [222, 20], e5: [214, 60], e6: [222, 100],
-} as const
-type NodeId = keyof typeof nodes
+// D-014: small graphs whose nodes travel into the letters F, A and E (viewBox 0 0 900 400).
+// Each node: [startX, startY, letterX, letterY, pink (1) or green (0)].
+const NODES: [number, number, number, number, number][] = [[150, 300, 100, 80, 0], [184, 300, 170, 80, 0], [171, 327, 240, 80, 1], [142, 333, 100, 135, 0], [119, 315, 100, 190, 0], [119, 285, 155, 190, 0], [142, 267, 210, 190, 0], [171, 273, 100, 255, 0], [330, 110, 100, 320, 1], [348, 139, 450, 80, 0], [314, 140, 427, 140, 0], [296, 112, 405, 200, 0], [312, 81, 382, 260, 0], [346, 80, 360, 320, 0], [364, 108, 473, 140, 1], [590, 310, 495, 200, 0], [576, 341, 518, 260, 0], [557, 318, 540, 320, 0], [563, 289, 450, 200, 0], [589, 276, 680, 80, 0], [616, 288, 750, 80, 1], [623, 317, 820, 80, 0], [605, 340, 680, 140, 0], [790, 140, 680, 200, 0], [756, 145, 735, 200, 0], [769, 113, 790, 200, 0], [803, 108, 680, 260, 1], [824, 135, 680, 320, 0], [811, 167, 750, 320, 0], [777, 172, 820, 320, 0]]
+// Letter strokes, drawn once the nodes are in place.
+const LETTER_EDGES: [number, number, number, number][] = [[100, 80, 170, 80], [170, 80, 240, 80], [100, 80, 100, 135], [100, 135, 100, 190], [100, 190, 155, 190], [155, 190, 210, 190], [100, 190, 100, 255], [100, 255, 100, 320], [450, 80, 427, 140], [427, 140, 405, 200], [405, 200, 382, 260], [382, 260, 360, 320], [450, 80, 473, 140], [473, 140, 495, 200], [495, 200, 518, 260], [518, 260, 540, 320], [405, 200, 450, 200], [450, 200, 495, 200], [680, 80, 750, 80], [750, 80, 820, 80], [680, 80, 680, 140], [680, 140, 680, 200], [680, 200, 735, 200], [735, 200, 790, 200], [680, 200, 680, 260], [680, 260, 680, 320], [680, 320, 750, 320], [750, 320, 820, 320]]
+// Edges of the four starting graphs, which fade as the letters form.
+const GRAPH_EDGES: [number, number, number, number][] = [[150, 300, 184, 300], [184, 300, 171, 327], [150, 300, 171, 327], [171, 327, 142, 333], [150, 300, 142, 333], [142, 333, 119, 315], [150, 300, 119, 315], [119, 315, 119, 285], [150, 300, 119, 285], [119, 285, 142, 267], [150, 300, 142, 267], [142, 267, 171, 273], [150, 300, 171, 273], [171, 273, 184, 300], [330, 110, 348, 139], [348, 139, 314, 140], [330, 110, 314, 140], [314, 140, 296, 112], [330, 110, 296, 112], [296, 112, 312, 81], [330, 110, 312, 81], [312, 81, 346, 80], [330, 110, 346, 80], [346, 80, 364, 108], [330, 110, 364, 108], [364, 108, 348, 139], [590, 310, 576, 341], [576, 341, 557, 318], [590, 310, 557, 318], [557, 318, 563, 289], [590, 310, 563, 289], [563, 289, 589, 276], [590, 310, 589, 276], [589, 276, 616, 288], [590, 310, 616, 288], [616, 288, 623, 317], [590, 310, 623, 317], [623, 317, 605, 340], [590, 310, 605, 340], [605, 340, 576, 341], [790, 140, 756, 145], [756, 145, 769, 113], [790, 140, 769, 113], [769, 113, 803, 108], [790, 140, 803, 108], [803, 108, 824, 135], [790, 140, 824, 135], [824, 135, 811, 167], [790, 140, 811, 167], [811, 167, 777, 172], [790, 140, 777, 172], [777, 172, 756, 145]]
 
-// Drawing order: a dot, another dot, the edge between them, and so on.
-const steps: ([NodeId] | [NodeId, NodeId])[] = [
-  ["f1"], ["f2"], ["f1", "f2"], ["f3"], ["f2", "f3"], ["f4"], ["f1", "f4"], ["f5"], ["f2", "f5"],
-  ["a1"], ["a2"], ["a1", "a2"], ["a3"], ["a2", "a3"], ["a4"], ["a5"], ["a4", "a5"],
-  ["e1"], ["e2"], ["e1", "e2"], ["e3"], ["e2", "e3"], ["e4"], ["e1", "e4"], ["e5"], ["e2", "e5"], ["e6"], ["e3", "e6"],
-]
-const STEP_MS = 100
-const links: [NodeId, NodeId][] = [["f4", "a2"], ["a3", "e3"]]
-const LINKS_AT = steps.length * STEP_MS
-
-const INTRO_MS = 14000
 const SEEN_KEY = "intro-seen"
-
-const hello = "Hello"
-const world = "world"
-
-type IntroProps = { cameo: Photo }
+type Phase = "graphs" | "letters" | "name" | "out"
+const EASE = [0.65, 0, 0.35, 1] as const
 
 /**
- * First visit only. The inline script in layout.tsx sets html[data-intro="play"]
- * before paint; CSS in globals.css runs the timeline; this component ends it.
+ * First visit in a session only. The inline script in layout.tsx sets
+ * html[data-intro="play"] before paint (never with reduced motion); CSS hides
+ * this overlay otherwise. About 4 seconds, with Skip.
  */
-export function Intro({ cameo }: IntroProps) {
+export function Intro() {
+  const [phase, setPhase] = useState<Phase>("graphs")
+
   useEffect(() => {
     const root = document.documentElement
     if (root.dataset.intro !== "play") return
-
-    const finish = () => {
-      root.dataset.intro = "done"
-      try {
-        sessionStorage.setItem(SEEN_KEY, "1")
-      } catch (error) {
-        console.warn("Intro: sessionStorage is not available", error)
-      }
-    }
-    // End exactly when the overlay's fade-out ends (the CSS timeline starts at
-    // first paint, before this effect runs), so scrolling never stays locked
-    // after the intro is gone. The timer is only a fallback.
-    const timer = window.setTimeout(finish, INTRO_MS)
-    const overlay = document.querySelector<HTMLElement>(".intro-overlay")
-    const fadeOut = overlay?.getAnimations().find((a) => a instanceof CSSAnimation && a.animationName === "intro-out")
-    fadeOut?.finished.then(finish).catch((error: unknown) => {
-      // AbortError means Skip or Esc already ended the intro and removed the overlay.
-      if (!(error instanceof DOMException && error.name === "AbortError")) console.error("Intro: fade-out failed", error)
-    })
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") finish()
-    }
-    window.addEventListener("keydown", onKey)
-    const skip = document.getElementById("skip-intro")
-    skip?.addEventListener("click", finish)
-    skip?.focus()
-    return () => {
-      window.clearTimeout(timer)
-      window.removeEventListener("keydown", onKey)
-      skip?.removeEventListener("click", finish)
-    }
+    const timers = [
+      window.setTimeout(() => setPhase("letters"), 900),
+      window.setTimeout(() => setPhase("name"), 2400),
+      window.setTimeout(() => setPhase("out"), 3300),
+      window.setTimeout(() => finish(), 4000),
+    ]
+    return () => timers.forEach((t) => window.clearTimeout(t))
   }, [])
 
+  function finish() {
+    document.documentElement.dataset.intro = "done"
+    try {
+      sessionStorage.setItem(SEEN_KEY, "1")
+    } catch (error) {
+      console.warn("Intro: sessionStorage is not available", error)
+    }
+  }
+
+  const formed = phase !== "graphs"
+
   return (
-    <div className="intro-overlay fixed inset-0 z-[70] bg-background text-foreground">
-      <button
-        suppressHydrationWarning
-        id="skip-intro"
-        type="button"
-        className={cn(buttonStyles({ variant: "secondary" }), "absolute top-5 right-5 z-10 md:top-6 md:right-14")}
-      >
-        Skip intro
-      </button>
-      <p className="sr-only" role="status">
-        Francis Adrian Esteban, portfolio
-      </p>
-
-      <div aria-hidden="true" className="grid size-full place-items-center overflow-hidden">
-        {/* Beat 0: the FAE graph */}
-        <svg
-          className="intro-graph col-start-1 row-start-1 w-[min(480px,80vw)]"
-          viewBox="0 0 242 120"
-          fill="none"
-        >
-          {links.map(([a, b]) => (
-            <path
-              key={`${a}-${b}`}
-              d={`M${nodes[a][0]} ${nodes[a][1]} L${nodes[b][0]} ${nodes[b][1]}`}
-              className="intro-link"
-              style={{ animationDelay: `${LINKS_AT}ms` }}
-              strokeDasharray="4 5"
-              stroke="var(--brand-green-soft)"
-              strokeWidth={2}
-              strokeLinecap="round"
-            />
-          ))}
-          {steps.map((step, i) =>
-            step.length === 2 ? (
-              <path
-                key={step.join("-")}
-                d={`M${nodes[step[0]][0]} ${nodes[step[0]][1]} L${nodes[step[1]][0]} ${nodes[step[1]][1]}`}
-                pathLength={1}
-                className="intro-edge"
-                style={{ animationDelay: `${i * STEP_MS}ms` }}
-                stroke="var(--brand-green)"
-                strokeWidth={3}
-                strokeLinecap="round"
-              />
-            ) : null,
-          )}
-          {steps.map((step, i) =>
-            step.length === 1 ? (
-              <circle
-                key={step[0]}
-                cx={nodes[step[0]][0]}
-                cy={nodes[step[0]][1]}
-                r={6}
-                className="intro-node"
-                style={{ animationDelay: `${i * STEP_MS}ms` }}
-                fill="var(--primary)"
-              />
-            ) : null,
-          )}
-        </svg>
-
-        {/* Beat 1: the greeting */}
-        <div
-          lang="fil"
-          className="intro-greeting col-start-1 row-start-1 px-6 text-center font-display text-[clamp(28px,4vw,48px)] leading-tight font-bold"
-        >
-          {intro.greeting.before}
-          <span className="text-brand-green">{intro.greeting.green}</span>
-          {intro.greeting.after}
-        </div>
-
-        {/* Beats 2 to 5: Hello world, the glitch, UNIVERSE, the dissolve */}
-        <div className="intro-hello col-start-1 row-start-1 flex items-baseline gap-[0.35em] text-[clamp(28px,4vw,48px)]">
-          <span className="font-mono leading-none font-medium">
-            {hello.split("").map((ch, i) => (
-              <span key={i} className="intro-char" style={{ animationDelay: `${7200 + i * 120}ms` }}>
-                {ch === " " ? " " : ch}
-              </span>
-            ))}
-          </span>
-          <span className="relative inline-grid items-baseline">
-            <span className="intro-world col-start-1 row-start-1 font-mono leading-none font-medium">
-              {world.split("").map((ch, i) => (
-                <span key={i} className="intro-char" style={{ animationDelay: `${7200 + (hello.length + i) * 120}ms` }}>
-                  {ch}
-                </span>
-              ))}
-              <span className="intro-caret text-muted-foreground">_</span>
-            </span>
-            <span className="intro-universe relative col-start-1 row-start-1 font-display text-[1.25em] leading-none font-extrabold">
-              UNIVERSE
-              <span className="intro-universe-slice absolute top-0 left-1 text-primary opacity-60 [clip-path:inset(20%_0_50%_0)]">
-                UNIVERSE
-              </span>
-              <span className="intro-universe-slice absolute top-0 -left-1 text-brand-green opacity-50 [clip-path:inset(62%_0_12%_0)]">
-                UNIVERSE
-              </span>
-            </span>
-          </span>
-        </div>
-
-        {/* Beat 4: the cameo */}
-        <div className="intro-cameo absolute right-[6%] bottom-[10%] aspect-[561/401] w-[min(250px,62vw)] md:right-[8%] md:w-[440px]">
-          <PhotoSlot
-            photo={cameo}
-            sizes="(min-width: 768px) 440px, 250px"
-            priority
-            detail="compact"
-            className="size-full"
-            imageClassName="object-contain"
+    <motion.div
+      className="intro-overlay fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-background"
+      animate={{ opacity: phase === "out" ? 0 : 1 }}
+      transition={{ duration: 0.65, ease: "easeOut" }}
+      style={{ pointerEvents: phase === "out" ? "none" : "auto" }}
+    >
+      <svg viewBox="0 0 900 400" className="h-auto w-[min(820px,90vw)] overflow-visible" role="img" aria-label="F A E">
+        {GRAPH_EDGES.map(([x1, y1, x2, y2], i) => (
+          <motion.line
+            key={`g${i}`}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="var(--primary)"
+            strokeOpacity={0.35}
+            strokeWidth={2}
+            animate={{ opacity: formed ? 0 : 1 }}
+            transition={{ duration: 0.5 }}
           />
-        </div>
-      </div>
-    </div>
+        ))}
+        {LETTER_EDGES.map(([x1, y1, x2, y2], i) => (
+          <motion.line
+            key={`l${i}`}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="var(--primary)"
+            strokeWidth={5}
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: formed ? 1 : 0, opacity: formed ? 1 : 0 }}
+            transition={{ duration: 0.7, delay: formed ? 0.7 + i * 0.025 : 0, ease: "easeOut" }}
+          />
+        ))}
+        {NODES.map(([x0, y0, x1, y1, pink], i) => (
+          <motion.circle
+            key={`n${i}`}
+            r={formed ? 7 : 5}
+            fill={pink ? "var(--accent-pink)" : "var(--primary)"}
+            initial={{ cx: x0, cy: y0, opacity: 0 }}
+            animate={{ cx: formed ? x1 : x0, cy: formed ? y1 : y0, opacity: 1 }}
+            transition={{ duration: formed ? 1.15 : 0.35, delay: formed ? i * 0.018 : i * 0.022, ease: EASE }}
+          />
+        ))}
+      </svg>
+      <motion.p
+        className="m-0 font-display text-[22px] font-bold tracking-[0.02em]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === "name" || phase === "out" ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Francis Adrian Esteban
+      </motion.p>
+      <button type="button" onClick={finish} className={cn(buttonStyles({ variant: "quiet" }), "absolute right-5 bottom-5")}>
+        Skip
+      </button>
+    </motion.div>
   )
 }

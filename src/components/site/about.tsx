@@ -1,82 +1,110 @@
-import { ArrowRight, FileText } from "lucide-react"
-import { about, hero, who } from "@content/site"
+import Image from "next/image"
+import { about, aboutGraph, who } from "@content/site"
 import type { Photo } from "@/lib/photos"
+import { resolvePhoto } from "@/lib/photos"
 import { streakDays } from "@/lib/streak"
-import { PhotoBlend } from "@/components/site/photo-blend"
-import { Reveal } from "@/components/site/reveal"
+import { AboutGraph } from "@/components/site/about-graph"
 import { Timeline } from "@/components/site/timeline"
-import { cn } from "@/lib/utils"
-import { buttonStyles } from "@/components/site/ds"
+import { Reveal } from "@/components/site/reveal"
 
 type AboutProps = { academic: Photo; community: Photo }
 
-export function About({ academic, community }: AboutProps) {
-  return (
-    <section id="about" data-section="about" aria-label="About" className="relative overflow-hidden">
+const card = "rounded-[20px] border border-border bg-card/90 p-5 md:p-6"
+const label = "font-mono text-[12.5px] tracking-[0.08em] text-accent-pink-text uppercase"
 
-      <Reveal className="relative mx-auto flex max-w-[1440px] flex-col gap-8 px-5 pt-28 lg:grid lg:min-h-[900px] lg:grid-cols-[minmax(0,420px)_400px_minmax(0,380px)] lg:justify-between lg:gap-6 lg:px-16 lg:pt-0 xl:px-[120px]">
-        <div className="flex flex-col gap-6 lg:mt-[300px]">
-          <div>
-            <div className="type-display optical-left text-xl text-muted-foreground lg:text-[64px]">Hi, I am</div>
-            <h2 id="about-name" className="type-display optical-left m-0 mt-1 text-[34px] leading-[1.02] lg:text-[64px]">
-              Francis Adrian Esteban
-            </h2>
-          </div>
-          <div className="hidden flex-wrap gap-3 lg:flex">
-            <a href={hero.cvHref} className={buttonStyles({ variant: "primary", size: "lg" })}>
-              <FileText aria-hidden="true" />
-              View CV
-            </a>
-          </div>
-        </div>
-
-        <div className="lg:self-end">
-          <PhotoBlend academic={academic} community={community} />
-        </div>
-
-        <div className="flex flex-col gap-5 lg:mt-[340px]">
-          <p className="type-lead m-0">{about.bio}</p>
-          <div className="flex gap-2.5">
-            <a href={hero.cvHref} className={cn(buttonStyles({ variant: "primary", size: "lg" }), "flex-1 lg:hidden")}>
-              <FileText aria-hidden="true" />
-              View CV
-            </a>
-            <a href="#projects" className={cn(buttonStyles({ size: "lg" }), "flex-1 lg:flex-none")}>
-              View projects
-              <ArrowRight aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-      </Reveal>
-
-      <WhoIAm />
-    </section>
-  )
+// The three groups of "Two scholarships, three organizations, five languages" (D-017).
+const scholarships = [
+  { name: "Iskolar sa Dakbayan", meta: "Cagayan de Oro City Scholarship Program", logo: "/logos/orgs/cdo-scholarship.png" },
+  { name: "CHED-UniFAST", meta: "USTAT Scholarship", logo: "/logos/orgs/ched-unifast.png" },
+]
+const orgLogos: Record<string, string> = {
+  "4-H Club USTP-CDO": "/logos/orgs/4h.png",
+  "Computer Science Student Society": "/logos/orgs/cs3.png",
+  "University City Scholars": "/logos/orgs/ucs.png",
 }
+const languages = [
+  { name: "Filipino", level: "Mother tongue" },
+  { name: "Tagalog", level: "Mother tongue" },
+  { name: "Bisaya (Cebuano)", level: "Mother tongue" },
+  { name: "English", level: "Proficient" },
+]
 
-function WhoIAm() {
+export function About({ academic, community }: AboutProps) {
   const days = streakDays()
+  const nodes = aboutGraph.nodes.map((n) => ({ ...n, photo: resolvePhoto(n.photo) }))
+
   return (
-    <section
-      id="who-i-am"
-      aria-labelledby="who-h"
-      className="relative mx-auto flex max-w-[1440px] flex-col gap-[22px] px-5 pt-10 pb-24 lg:px-16 lg:pt-[30px] lg:pb-[110px] xl:px-[120px]"
-    >
-      <Reveal>
-        <h2 id="who-h" className="type-h2 optical-left m-0">
-          Two scholarships, three organizations, five languages
-        </h2>
-      </Reveal>
-      {/* Borderless timelines: the step reaching the reading line lights up as the page scrolls. */}
-      <div className="mt-4 grid gap-14 lg:mt-8 lg:grid-cols-3 lg:gap-10">
-        <Reveal delay={0}>
-          <Timeline title="Education" entries={who.education} />
+    <section id="about" data-section="about" aria-labelledby="about-title" className="relative scroll-mt-24 py-24 md:py-32">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-5 md:px-8">
+        <Reveal className="flex flex-wrap items-end justify-between gap-6">
+          <div className="flex max-w-[640px] flex-col gap-3">
+            <div className="type-label text-muted-foreground">About</div>
+            <h2 id="about-title" className="type-h2 m-0">Two sides, one graph</h2>
+            <p className="type-lead m-0 text-muted-foreground">{about.bio} Hover a node to see where it comes from.</p>
+          </div>
         </Reveal>
-        <Reveal delay={80}>
-          <Timeline title="Leadership" entries={who.leadership} />
-        </Reveal>
-        <Reveal delay={160}>
-          <Timeline title="Languages" entries={who.languages} streak={days} />
+      </div>
+
+      {/* The graph gets a wider stage than the text around it (D-017). */}
+      <div className="mx-auto mt-8 max-w-[1600px] px-5 md:px-8">
+        <AboutGraph nodes={nodes} edges={aboutGraph.edges} links={aboutGraph.links} root={aboutGraph.root} academic={academic} community={community} />
+      </div>
+
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-5 md:px-8">
+        <Reveal className="mt-10 flex flex-col gap-5">
+          <h3 id="who-h" className="type-h2 m-0">Two scholarships, three organizations, five languages</h3>
+          <div className="grid gap-5 md:grid-cols-3">
+            <div className={`${card} flex flex-col gap-4`}>
+              <div className={label}>2 scholarships</div>
+              {scholarships.map((s) => (
+                <div key={s.name} className="flex items-center gap-3">
+                  <Image src={s.logo} alt="" width={44} height={44} className="size-11 object-contain" />
+                  <div>
+                    <div className="font-bold">{s.name}</div>
+                    <div className="text-sm text-muted-foreground">{s.meta}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className={`${card} flex flex-col gap-4`}>
+              <div className={label}>3 organizations</div>
+              {who.leadership.map((o) => {
+                const logo = orgLogos[o.org]
+                return (
+                <div key={o.org} className="flex items-center gap-3">
+                  {logo && <Image src={logo} alt="" width={44} height={44} className="size-11 object-contain" />}
+                  <div>
+                    <div className="font-bold">{o.org}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {o.title}
+                      {o.meta ? ` · ${o.meta}` : ""}
+                    </div>
+                  </div>
+                </div>
+                )
+              })}
+            </div>
+            <div className={`${card} flex flex-col gap-1`}>
+              <div className={`${label} mb-2`}>5 languages</div>
+              {languages.map((l) => (
+                <div key={l.name} className="flex justify-between gap-2 border-b border-border py-1.5">
+                  <span className="font-bold">{l.name}</span>
+                  <span className="text-sm text-muted-foreground">{l.level}</span>
+                </div>
+              ))}
+              <div className="flex justify-between gap-2 py-1.5">
+                <span className="font-bold" lang="ja">
+                  Nihongo 日本語
+                </span>
+                <span className="text-right text-sm text-muted-foreground">
+                  Beginner · <b className="text-primary">{days}</b>-day Duolingo streak
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className={`${card} md:p-8`}>
+            <Timeline title="Education" entries={who.education} />
+          </div>
         </Reveal>
       </div>
     </section>

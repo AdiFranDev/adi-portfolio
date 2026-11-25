@@ -3,7 +3,7 @@ import { Bricolage_Grotesque, Caveat, Geist, Geist_Mono, Noto_Sans_JP } from "ne
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteNav } from "@/components/site/site-nav"
-import { GrainBackdrop } from "@/components/site/grain-backdrop"
+import { SiteBackdrop } from "@/components/site/site-backdrop"
 import { cn } from "@/lib/utils"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -69,7 +69,7 @@ export default function RootLayout({
           >
             Skip to content
           </a>
-          <GrainBackdrop />
+          <SiteBackdrop />
           <SiteNav />
           {children}
         </ThemeProvider>

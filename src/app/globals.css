@@ -43,6 +43,10 @@
     --color-foreground: var(--foreground);
     --color-background: var(--background);
     --color-brand-green: var(--brand-green);
+    --color-accent-pink: var(--accent-pink);
+    --color-accent-pink-text: var(--accent-pink-text);
+    --color-accent-pink-soft: var(--accent-pink-soft);
+    --color-green-soft: var(--green-soft);
     --color-brand-green-foreground: var(--brand-green-foreground);
     --color-brand-green-soft: var(--brand-green-soft);
     --color-brand-green-pale: var(--brand-green-pale);
@@ -59,32 +63,32 @@
 
 /* Brand tokens: brand-guidelines.md, section 3. */
 :root {
-    --background: #fffafc;
-    --foreground: #24161c;
-    --card: #fffafc;
-    --card-foreground: #24161c;
-    --popover: #fffafc;
-    --popover-foreground: #24161c;
-    --primary: #c32777;
-    --primary-foreground: #fffafc;
-    --secondary: #fde8f1;
-    --secondary-foreground: #79204b;
-    --muted: #f7f2f4;
-    --muted-foreground: #5f5157;
-    --accent: #ddf6e4;
-    --accent-foreground: #0e492a;
+    --background: #f8f7f3;
+    --foreground: #10211c;
+    --card: #fcfcf9;
+    --card-foreground: #10211c;
+    --popover: #fcfcf9;
+    --popover-foreground: #10211c;
+    --primary: #012a23;
+    --primary-foreground: #f8f7f3;
+    --secondary: #e3ece8;
+    --secondary-foreground: #012a23;
+    --muted: #efeee8;
+    --muted-foreground: #4a5752;
+    --accent: #fde8f1;
+    --accent-foreground: #79204b;
     --destructive: #cc2a1b;
-    --border: #e5dbdf;
-    --input: #8a7e83;
+    --border: #dcdcd4;
+    --input: #8b948f;
     --ring: #c32777;
-    /* 2 quiet + 1 loud: bone-white ground, deep green, and pink as the only loud color. */
-    --brand-green: #0e492a;
-    --brand-green-foreground: #fffafc;
-    --brand-green-soft: #3f8a5c;
-    --brand-green-pale: #8cc9a1;
-    --placeholder: #e9e4e6;
-    --placeholder-alt: #e2dcdf;
-    --glass: rgb(255 250 252 / 0.86);
+    /* Brand v2 (D-010): pearl ground, deep green leads, pink accents. brand-green now holds the pink accent. */
+    --brand-green: #c32777;
+    --brand-green-foreground: #fcfcf9;
+    --brand-green-soft: #d4508f;
+    --brand-green-pale: #f4a6c8;
+    --placeholder: #ebeae3;
+    --placeholder-alt: #e4e3dc;
+    --glass: rgb(252 252 249 / 0.88);
     /* Background glow (grain-backdrop.tsx): brand pinks and greens, soft on bone. */
     --glow-a: rgb(195 39 119 / 0.30);
     --glow-b: rgb(244 166 200 / 0.55);
@@ -104,42 +108,47 @@
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
     --radius: 0.625rem;
-    --sidebar: #fffafc;
-    --sidebar-foreground: #24161c;
-    --sidebar-primary: #c32777;
-    --sidebar-primary-foreground: #fffafc;
-    --sidebar-accent: #ddf6e4;
-    --sidebar-accent-foreground: #0e492a;
-    --sidebar-border: #e5dbdf;
+    --sidebar: #f8f7f3;
+    --sidebar-foreground: #10211c;
+    --sidebar-primary: #012a23;
+    --sidebar-primary-foreground: #f8f7f3;
+    --sidebar-accent: #e3ece8;
+    --sidebar-accent-foreground: #012a23;
+    --sidebar-border: #dcdcd4;
     --sidebar-ring: #c32777;
+    --accent-pink: #c32777;
+    --accent-pink-text: #a8205f;
+    --accent-pink-soft: #fde8f1;
+    --green-soft: #e3ece8;
+    --texture-opacity: 0.16;
 }
 
 .dark {
-    --background: #0c140f;
-    --foreground: #f3ecef;
-    --card: #0c140f;
-    --card-foreground: #f3ecef;
-    --popover: #1a211d;
-    --popover-foreground: #f3ecef;
-    --primary: #f2a3c1;
-    --primary-foreground: #211017;
-    --secondary: #322027;
-    --secondary-foreground: #f5d4df;
-    --muted: #1a211d;
-    --muted-foreground: #a3aea7;
-    --accent: #162f21;
-    --accent-foreground: #c1eacb;
+    --background: #0a1713;
+    --foreground: #eef0ea;
+    --card: #0f1f1a;
+    --card-foreground: #eef0ea;
+    --popover: #12241e;
+    --popover-foreground: #eef0ea;
+    --primary: #9fd3bf;
+    --primary-foreground: #0a1713;
+    --secondary: #16302a;
+    --secondary-foreground: #cfe9df;
+    --muted: #12241e;
+    --muted-foreground: #a7b3ad;
+    --accent: #3a1729;
+    --accent-foreground: #f8c6dc;
     --destructive: #f66e5c;
-    --border: #2d3530;
-    --input: #5c6660;
-    --ring: #f2a3c1;
-    --brand-green: #8cc9a1;
-    --brand-green-foreground: #0c140f;
-    --brand-green-soft: #3f8a5c;
-    --brand-green-pale: #8cc9a1;
-    --placeholder: #1f2823;
-    --placeholder-alt: #18201b;
-    --glass: rgb(12 20 15 / 0.86);
+    --border: #26372f;
+    --input: #5f6f68;
+    --ring: #f28bbd;
+    --brand-green: #f28bbd;
+    --brand-green-foreground: #0a1713;
+    --brand-green-soft: #f5a3c9;
+    --brand-green-pale: #f28bbd;
+    --placeholder: #15271f;
+    --placeholder-alt: #11211a;
+    --glass: rgb(10 23 19 / 0.86);
     --glow-a: rgb(195 39 119 / 0.42);
     --glow-b: rgb(120 30 80 / 0.55);
     --glow-c: rgb(26 118 63 / 0.50);
@@ -158,14 +167,19 @@
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --sidebar: #0c140f;
-    --sidebar-foreground: #f3ecef;
-    --sidebar-primary: #f2a3c1;
-    --sidebar-primary-foreground: #211017;
-    --sidebar-accent: #162f21;
-    --sidebar-accent-foreground: #c1eacb;
-    --sidebar-border: #2d3530;
-    --sidebar-ring: #f2a3c1;
+    --sidebar: #0a1713;
+    --sidebar-foreground: #eef0ea;
+    --sidebar-primary: #9fd3bf;
+    --sidebar-primary-foreground: #0a1713;
+    --sidebar-accent: #16302a;
+    --sidebar-accent-foreground: #cfe9df;
+    --sidebar-border: #26372f;
+    --sidebar-ring: #f28bbd;
+    --accent-pink: #f28bbd;
+    --accent-pink-text: #f5a3c9;
+    --accent-pink-soft: #3a1729;
+    --green-soft: #16302a;
+    --texture-opacity: 0.2;
 }
 
 @layer base {
@@ -230,7 +244,7 @@ html:not([data-intro="play"]) .site-nav > * {
 }
 
 .intro-overlay {
-  animation: intro-out 1800ms 12200ms cubic-bezier(0.33, 0, 0.2, 1) both;
+  /* D-014: the graph intro is timed in intro.tsx; the old 14 s CSS timeline is retired. */
 }
 .intro-node {
   transform-box: fill-box;
@@ -720,4 +734,31 @@ html:not([data-intro="play"]) .site-nav > * {
     clip-path: none;
     animation: none;
   }
+}
+
+/* ---------- Brand v2 background (D-012): faint facet texture ---------- */
+.site-texture {
+  background-image: url("/images/texture/facets.svg");
+  background-size: 1600px auto;
+  background-repeat: repeat;
+}
+.dark .site-texture {
+  filter: invert(1) hue-rotate(180deg);
+}
+html[data-intro="play"] .site-nav-desktop {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* D-016: the hero line drawings stay quiet behind the name; light lines in dark mode. */
+.hero-lines {
+  opacity: 0.55;
+}
+.dark .hero-lines {
+  filter: invert(1) hue-rotate(180deg);
+  opacity: 0.4;
+}
+/* The hero scene and cutout fade out at the bottom, so the page texture continues with no edge. */
+.hero-fade {
+  mask-image: linear-gradient(#000 62%, transparent 96%);
 }

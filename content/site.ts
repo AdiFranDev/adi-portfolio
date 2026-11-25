@@ -90,6 +90,17 @@ export const hero = {
     { id: "student", label: "Student-Leader", n: "06", href: "#projects", note: "senior advisor in three orgs" },
   ],
   photos: {
+    // D-016: the campus and farm as deep-green line drawings on pearl.
+    campusLine: {
+      file: "/images/hero/campus-line.webp",
+      alt: "",
+      label: "Campus line drawing, transparent WebP",
+    },
+    farmLine: {
+      file: "/images/hero/farm-line.webp",
+      alt: "",
+      label: "Farm line drawing, transparent WebP",
+    },
     background: {
       file: "/images/hero/campus.webp",
       alt: "",
@@ -176,6 +187,8 @@ export type TimelineEntry = {
   lang?: string
   stat?: "streak"
   todo?: boolean
+  // School logos, 160 px tall; `w` is the width at that height.
+  logos?: { file: string; alt: string; w: number }[]
 }
 
 export const who = {
@@ -185,6 +198,11 @@ export const who = {
       title: "BS Computer Science",
       meta: "Expected graduation June 2027",
       dates: "2023 to present",
+      logos: [
+        { file: "/logos/schools/ustp.webp", alt: "USTP", w: 147 },
+        { file: "/logos/schools/citc.webp", alt: "College of Information Technology and Computing", w: 377 },
+        { file: "/logos/schools/dcs.webp", alt: "Department of Computer Science", w: 173 },
+      ],
       tags: [
         { text: "Dean's Lister, 1st sem AY 2024 to 2025" },
         { text: "Dean's Lister, 2nd sem AY 2025 to 2026" },
@@ -197,12 +215,17 @@ export const who = {
       title: "Senior High School, STEM strand",
       meta: "Outstanding Student Leadership Award",
       dates: "2020 to 2023",
+      logos: [{ file: "/logos/schools/liceo.webp", alt: "Liceo de Cagayan University", w: 160 }],
     },
     {
       org: "Gusa Elementary School and East Gusa National High School",
       title: "Primary and secondary education",
       meta: "Completed with honors",
       dates: "2012 to 2020",
+      logos: [
+        { file: "/logos/schools/gusa-es.webp", alt: "Gusa Elementary School", w: 160 },
+        { file: "/logos/schools/east-gusa.webp", alt: "East Gusa National High School", w: 160 },
+      ],
     },
   ],
   leadership: [
@@ -250,7 +273,7 @@ export const contact = {
 // Footer (spec 4.12).
 export const footer = {
   // Short quotes or mottos. Add as many as you like; each shows on its own line.
-  quotes: ["Memento Mori - For a Stoic, mindful life.", "The best way to predict the future is to create it. - Abraham Lincoln"],
+  quotes: ["Memento Mori - For a Stoic, mindful life."],
   // icon: a file in /public/logos/social. null = no logo yet.
   socials: [
     { name: "GitHub", href: profiles.github, icon: "/logos/social/github.svg" },
@@ -269,4 +292,40 @@ export const footer = {
   },
   signoff: "Adirawr, dinarawrawr, thanks for visiting mwa <3",
   copyright: "© 2026 AdiFranDev. All rights reserved.",
-};
+};
+
+// D-017: the About graph. x and y place each node on a 1600 × 720 stage around
+// Adrian's photo. The graph grows from `root` (Empathy, inside the photo) along
+// `edges`, then Impact appears beneath the photo and the photo changes to the 4-H shirt.
+export const aboutGraph = {
+  nodes: [
+    { id: "researcher", label: "Researcher", n: "08", x: 190, y: 130, side: "academic", note: "graphs that route people out of floods", photo: { file: "/images/projects/csek-1.webp", alt: "Map of evacuation routes in Cagayan de Oro", label: "Researcher" } },
+    { id: "scholar", label: "Scholar", n: "05", x: 420, y: 300, side: "academic", note: "city scholar, CHED-UniFAST", photo: { file: "/images/moments/kinanao-team.webp", alt: "University City Scholars officers with their award", label: "Scholar" } },
+    { id: "farms", label: "Urban farms", n: "04", x: 170, y: 470, side: "academic", note: "Fresco Greenovations", photo: { file: "/images/experiences/fresco-intern-1.webp", alt: "Adrian wiring an ESP32 sensor node", label: "Urban farms" } },
+    { id: "initiative", label: "Initiative", n: "02", x: 480, y: 560, side: "academic", note: "I start before I'm asked", photo: { file: "/images/projects/agrivanture-1.webp", alt: "The AgriVANture team at the farm", label: "Initiative" } },
+    { id: "creative", label: "Creative Developer", n: "09", x: 1410, y: 130, side: "community", note: "I build what I design", photo: { file: "/images/projects/farmbox-1.webp", alt: "FarmBox ERP app screens", label: "Creative Developer" } },
+    { id: "student", label: "Student-Leader", n: "07", x: 1180, y: 300, side: "community", note: "senior advisor in three orgs", photo: { file: "/images/projects/cs3-congress-3.webp", alt: "BS Computer Science students together", label: "Student-Leader" } },
+    { id: "program", label: "Program Director", n: "06", x: 1430, y: 470, side: "community", note: "AgriVANture, AgriCARE", photo: { file: "/images/projects/pagkat-on-3.webp", alt: "A Pagkat-on session in a classroom", label: "Program Director" } },
+    { id: "action", label: "Action", n: "03", x: 1120, y: 560, side: "community", note: "plans that leave the page", photo: { file: "/images/moments/speaking.webp", alt: "Adrian speaking into a microphone", label: "Action" } },
+    { id: "empathy", label: "Empathy", n: "01", x: 800, y: 450, side: "center", note: "where every side starts", photo: { file: "/images/moments/agrivanture-thanks.webp", alt: "Thanking the Masigasig Women's Association", label: "Empathy" } },
+    { id: "impact", label: "Impact", n: "10", x: 800, y: 640, side: "impact", note: "where the work lands", photo: { file: "/images/projects/agricare-activity-1.webp", alt: "A full room at a LEaP session", label: "Impact" } },
+  ],
+  // A tree grown from Empathy: each pair is [parent, child]. Impact is added last.
+  edges: [
+    ["empathy", "initiative"], ["empathy", "action"],
+    ["initiative", "farms"], ["initiative", "scholar"], ["action", "program"], ["action", "student"],
+    ["scholar", "researcher"], ["student", "creative"],
+    ["empathy", "impact"],
+  ],
+  // Extra links within each side, added once both ends exist. Chosen so no two lines cross.
+  links: [
+    ["scholar", "farms"], ["farms", "researcher"],
+    ["student", "program"], ["program", "creative"],
+  ],
+  root: "empathy",
+} satisfies {
+  nodes: { id: string; label: string; n: string; x: number; y: number; side: "academic" | "community" | "center" | "impact"; note: string; photo: PhotoSpec }[]
+  edges: [string, string][]
+  links: [string, string][]
+  root: string
+}

@@ -84,7 +84,7 @@ export function NameGlitch() {
       onPointerLeave={(e) => {
         if (e.pointerType === "mouse") rest()
       }}
-      className="relative inline-flex text-primary"
+      className="relative inline-flex text-accent-pink"
     >
       AD
       {/* The slot keeps RIAN's width (the visible text takes no width of its own),
@@ -96,7 +96,7 @@ export function NameGlitch() {
           {phase === "glitch" && (
             <span className="relative">
               {noise}
-              <span className="absolute top-0 left-1 text-brand-green opacity-55 [clip-path:inset(18%_0_52%_0)]">
+              <span className="absolute top-0 left-1 text-primary opacity-55 [clip-path:inset(18%_0_52%_0)]">
                 {noise}
               </span>
               <span className="absolute top-0 -left-[5px] text-foreground opacity-40 [clip-path:inset(62%_0_12%_0)]">

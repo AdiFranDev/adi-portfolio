@@ -65,3 +65,12 @@ export const affiliations: { id: string; name: string; logo: string }[] = [
   { id: "cdo-scholarship", name: "Cagayan de Oro City Scholarship Program", logo: "/logos/orgs/cdo-scholarship.png" },
   { id: "ched-unifast", name: "CHED-UniFAST", logo: "/logos/orgs/ched-unifast.png" },
 ]
+
+// D-019: the Skills grid groups tools by kind, in this order. Ids match `tools`.
+export const toolGroups: { name: string; ids: string[] }[] = [
+  { name: "Languages", ids: ["python", "cplusplus", "typescript", "javascript", "java", "r"] },
+  { name: "Web and apps", ids: ["react", "nextdotjs", "tailwindcss", "nodedotjs", "flutter", "supabase", "postgresql", "firebase", "vercel"] },
+  { name: "Data and AI", ids: ["pytorch", "tensorflow", "networkx", "openstreetmap", "claude", "gemini", "antigravity"] },
+  { name: "Hardware", ids: ["arduino", "espressif"] },
+  { name: "Design and tools", ids: ["git", "figma", "canva"] },
+]

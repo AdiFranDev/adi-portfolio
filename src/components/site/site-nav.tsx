@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { motion, useReducedMotion } from "motion/react"
 import Link from "next/link"
 import { Menu } from "@base-ui/react/menu"
 import { Dialog } from "@base-ui/react/dialog"
@@ -8,9 +9,10 @@ import { Menu as MenuIcon, MoreHorizontal, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { iconButtonStyles } from "@/components/site/ds"
+import { Ribbon } from "@/components/site/ribbon"
 
 type NavKey = "home" | "about" | "portfolio" | "contact"
-type SectionKey = "home" | "about" | "experiences" | "projects" | "moments" | "skills" | "contact"
+type SectionKey = "home" | "about" | "experiences" | "certificates" | "projects" | "moments" | "skills" | "contact"
 
 const mainItems: { key: NavKey; label: string; href: string }[] = [
   { key: "home", label: "Home", href: "/#home" },
@@ -22,9 +24,10 @@ const mainItems: { key: NavKey; label: string; href: string }[] = [
 // The ⋯ menu: Portfolio's sections. New Portfolio sections go here, so the bar never grows.
 const portfolioItems: { key: SectionKey; label: string; href: string }[] = [
   { key: "experiences", label: "Experiences", href: "/#experiences" },
+  { key: "certificates", label: "Certificates", href: "/#certificates" },
   { key: "projects", label: "Selected work", href: "/#projects" },
-  { key: "moments", label: "Moments", href: "/#moments" },
   { key: "skills", label: "Skills", href: "/#skills" },
+  { key: "moments", label: "Moments", href: "/#moments" },
 ]
 
 const phoneItems: { key: SectionKey; label: string; href: string }[] = [
@@ -38,6 +41,7 @@ const navOf: Record<SectionKey, NavKey> = {
   home: "home",
   about: "about",
   experiences: "portfolio",
+  certificates: "portfolio",
   projects: "portfolio",
   moments: "portfolio",
   skills: "portfolio",
@@ -82,29 +86,112 @@ export function SiteNav() {
 }
 
 type DesktopNavProps = { activeNav: NavKey; section: SectionKey }
+type NavPhase = "hidden" | "drop" | "open" | "settled"
+
+// D-015: no nav over the hero. Past it, the ribbon drops on a short string, then
+// vanishes in place as the bar opens outward from it, with Home as its first link.
+function useNavPhase(reduced: boolean | null): NavPhase {
+  const [phase, setPhase] = useState<NavPhase>("hidden")
+  const shown = useRef(false)
+  useEffect(() => {
+    const timers: number[] = []
+    const clear = () => timers.splice(0).forEach((t) => window.clearTimeout(t))
+    const update = () => {
+      const hero = document.getElementById("home")
+      const past = hero ? hero.getBoundingClientRect().bottom < window.innerHeight * 0.35 : true
+      if (past === shown.current) return
+      shown.current = past
+      clear()
+      if (reduced) {
+        setPhase(past ? "settled" : "hidden")
+        return
+      }
+      if (past) {
+        setPhase("drop")
+        timers.push(window.setTimeout(() => setPhase("open"), 600))
+        timers.push(window.setTimeout(() => setPhase("settled"), 950))
+      } else {
+        setPhase("drop")
+        timers.push(window.setTimeout(() => setPhase("hidden"), 450))
+      }
+    }
+    update()
+    window.addEventListener("scroll", update, { passive: true })
+    window.addEventListener("resize", update)
+    return () => {
+      clear()
+      window.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+    }
+  }, [reduced])
+  return phase
+}
 
 function DesktopNav({ activeNav, section }: DesktopNavProps) {
+  const reduced = useReducedMotion()
+  const phase = useNavPhase(reduced)
+  const open = phase === "open" || phase === "settled"
+
   return (
-    <nav
-      aria-label="Main"
-      className="site-nav fixed top-5 left-1/2 z-50 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-input bg-(--glass) p-1.5 shadow-[0_4px_16px_rgb(0_0_0/0.08)] backdrop-blur-md md:flex"
-    >
-      {mainItems.map((item) => {
+    <>
+      <motion.span
+        aria-hidden="true"
+        className="site-nav-desktop pointer-events-none fixed top-0 left-1/2 z-[61] hidden h-5 w-0.5 -translate-x-1/2 origin-top bg-accent-pink md:block"
+        initial={false}
+        animate={{ scaleY: phase === "drop" ? 1 : 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      />
+      <motion.span
+        aria-hidden="true"
+        className="site-nav-desktop pointer-events-none fixed top-[22px] left-1/2 z-[62] -ml-[22px] hidden size-11 items-center justify-center md:flex"
+        initial={false}
+        animate={{
+          y: phase === "hidden" ? -110 : phase === "drop" ? -4 : 0,
+          scale: open ? 0.5 : 1.35,
+          opacity: phase === "drop" ? 1 : 0,
+          rotate: phase === "hidden" ? -14 : 0,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 18,
+          opacity: { duration: phase === "drop" ? 0.15 : 0.3 },
+        }}
+      >
+        <Ribbon id="nav" className="size-10" />
+      </motion.span>
+      <motion.nav
+        aria-label="Main"
+        aria-hidden={!open}
+        className="site-nav-desktop fixed top-5 left-1/2 z-50 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-input bg-(--glass) p-1.5 shadow-[0_4px_16px_rgb(0_0_0/0.08)] backdrop-blur-md md:flex"
+        initial={false}
+        animate={{
+          clipPath: open ? "inset(-24px -24px -24px -24px round 9999px)" : "inset(0 calc(50% - 28px) 0 calc(50% - 28px) round 9999px)",
+          opacity: open ? 1 : 0,
+        }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        style={{ visibility: phase === "hidden" ? "hidden" : "visible" }}
+      >
+      {mainItems.map((item, i) => {
         const active = item.key === activeNav
         return (
-          <a
+          <motion.a
             key={item.key}
             href={item.href}
+            tabIndex={open ? 0 : -1}
             aria-current={active ? "page" : undefined}
+            initial={false}
+            animate={{ opacity: phase === "settled" ? 1 : 0 }}
+            transition={{ duration: 0.24, delay: phase === "settled" ? i * 0.06 : 0 }}
             className={cn(
               "flex min-h-11 items-center rounded-full px-5 text-[15px] font-medium text-foreground no-underline transition-colors duration-150",
               active && "bg-primary px-[22px] font-semibold text-primary-foreground",
-              !active && item.key === "contact" && "bg-foreground font-semibold text-background hover:bg-foreground/90",
+              !active && item.key === "contact" && "border-[1.5px] border-primary font-semibold text-primary hover:bg-green-soft",
               !active && item.key !== "contact" && "hover:bg-muted",
             )}
           >
             {item.label}
-          </a>
+          </motion.a>
         )
       })}
       <Menu.Root>
@@ -144,7 +231,8 @@ function DesktopNav({ activeNav, section }: DesktopNavProps) {
         </Menu.Portal>
       </Menu.Root>
       <ThemeToggle />
-    </nav>
+      </motion.nav>
+    </>
   )
 }
 
